@@ -127,8 +127,8 @@ function main()
     -- Configuration parameters
     opt = {}
     -- change these to the appropriate data locations
-    opt.glovePath = "CHANGE_ME" -- path to raw glove data .txt file
-    opt.dataPath = "CHANGE_ME"
+    opt.glovePath = "/Users/petervarshavsky/Dropbox/NYU/deeplearning/DL_DeepBlue_a3_YDS/glovecd" -- path to raw glove data .txt file
+    opt.dataPath = "/Users/petervarshavsky/Dropbox/NYU/deeplearning/DL_DeepBlue_a3_YDS/data"
     -- word vector dimensionality
     opt.inputDim = 50 
     -- nTrainDocs is the number of documents per class used in the training set, i.e.
