@@ -8,6 +8,7 @@ ffi = require('ffi')
 -- glove_table['word'] = vector
 function load_glove(path, inputDim)
     
+    print("Path: " .. path)
     local glove_file = io.open(path)
     local glove_table = {}
 
@@ -127,7 +128,7 @@ function main()
     -- Configuration parameters
     opt = {}
     -- change these to the appropriate data locations
-    opt.glovePath = "/Users/petervarshavsky/Dropbox/NYU/deeplearning/DL_DeepBlue_a3_YDS/glovecd" -- path to raw glove data .txt file
+    opt.glovePath = "/Users/petervarshavsky/Dropbox/NYU/deeplearning/DL_DeepBlue_a3_YDS/glove/glove.6B.50d.txt" -- path to raw glove data .txt file
     opt.dataPath = "/Users/petervarshavsky/Dropbox/NYU/deeplearning/DL_DeepBlue_a3_YDS/data"
     -- word vector dimensionality
     opt.inputDim = 50 
@@ -148,41 +149,41 @@ function main()
 
     print("Loading word vectors...")
     local glove_table = load_glove(opt.glovePath, opt.inputDim)
+    -- print("Loading raw data...")
+    -- local raw_data = torch.load(opt.dataPath)
     
-    print("Loading raw data...")
-    local raw_data = torch.load(opt.dataPath)
+    -- print("Computing document input representations...")
+    -- local processed_data, labels = preprocess_data(raw_data, glove_table, opt)
     
-    print("Computing document input representations...")
-    local processed_data, labels = preprocess_data(raw_data, glove_table, opt)
+    -- -- split data into makeshift training and validation sets
+    -- local training_data = processed_data:sub(1, opt.nClasses*opt.nTrainDocs, 1, processed_data:size(2)):clone()
+    -- local training_labels = labels:sub(1, opt.nClasses*opt.nTrainDocs):clone()
     
-    -- split data into makeshift training and validation sets
-    local training_data = processed_data:sub(1, opt.nClasses*opt.nTrainDocs, 1, processed_data:size(2)):clone()
-    local training_labels = labels:sub(1, opt.nClasses*opt.nTrainDocs):clone()
-    
-    -- make your own choices - here I have not created a separate test set
-    local test_data = training_data:clone() 
-    local test_labels = training_labels:clone()
+    -- -- make your own choices - here I have not created a separate test set
+    -- local test_data = training_data:clone() 
+    -- local test_labels = training_labels:clone()
 
-    -- construct model:
-    model = nn.Sequential()
+    -- -- construct model:
+    -- model = nn.Sequential()
    
-    -- if you decide to just adapt the baseline code for part 2, you'll probably want to make this linear and remove pooling
-    model:add(nn.TemporalConvolution(1, 20, 10, 1))
+    -- -- if you decide to just adapt the baseline code for part 2, you'll probably want to make this linear and remove pooling
+    -- model:add(nn.TemporalConvolution(1, 20, 10, 1))
     
-    --------------------------------------------------------------------------------------
-    -- Replace this temporal max-pooling module with your log-exponential pooling module:
-    --------------------------------------------------------------------------------------
-    model:add(nn.TemporalMaxPooling(3, 1))
+    -- --------------------------------------------------------------------------------------
+    -- -- Replace this temporal max-pooling module with your log-exponential pooling module:
+    -- --------------------------------------------------------------------------------------
+    -- model:add(nn.TemporalMaxPooling(3, 1))
     
-    model:add(nn.Reshape(20*39, true))
-    model:add(nn.Linear(20*39, 5))
-    model:add(nn.LogSoftMax())
+    -- model:add(nn.Reshape(20*39, true))
+    -- model:add(nn.Linear(20*39, 5))
+    -- model:add(nn.LogSoftMax())
 
-    criterion = nn.ClassNLLCriterion()
+    -- criterion = nn.ClassNLLCriterion()
    
-    train_model(model, criterion, training_data, training_labels, test_data, test_labels, opt)
-    local results = test_model(model, test_data, test_labels)
-    print(results)
+    -- train_model(model, criterion, training_data, training_labels, test_data, test_labels, opt)
+    -- local results = test_model(model, test_data, test_labels)
+    -- print(results)
+    return glove_table
 end
 
-main()
+gt = main()
