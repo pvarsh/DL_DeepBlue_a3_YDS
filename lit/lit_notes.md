@@ -11,3 +11,5 @@
 5. [Semi-supervised recursive autoencoders for predicting sentiment distributions](https://github.com/pvarsh/DL_DeepBlue_a3_YDS/blob/master/lit/Socher-SemiSupervisedRecursiveAutoencoders.pdf): Recursive neural networks
 
 6. [Sequence to Sequence Learning with Neural Networks](https://github.com/pvarsh/DL_DeepBlue_a3_YDS/blob/master/lit/Sutskever-SequenceToSequenceLearningWithNNs.pdf): Very general approach to supervised learning with recurrent neural networks.
+
+7. [Learning Word Vectors for Sentiment Analysis](https://github.com/pvarsh/DL_DeepBlue_a3_YDS/blob/master/lit/Maas-WordVectorsSentimentAnalysis.pdf): NLP with IMDB data. Assigned for 3/11 lab.
