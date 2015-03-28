@@ -127,10 +127,10 @@ function main()
     -- Configuration parameters
     opt = {}
     -- change these to the appropriate data locations
-    opt.glovePath = "/scratch/courses/DSGA1008/A3/glove/glove.6B.50d.txt" -- path to raw glove data .txt file
+    opt.glovePath = "/scratch/courses/DSGA1008/A3/glove/glove.6B.300d.txt" -- path to raw glove data .txt file
     opt.dataPath = "/scratch/courses/DSGA1008/A3/data/train.t7b"
     -- word vector dimensionality
-    opt.inputDim = 50 
+    opt.inputDim = 300
     -- nTrainDocs is the number of documents per class used in the training set, i.e.
     -- here we take the first nTrainDocs documents from each class as training samples
     -- and use the rest as a validation set.
@@ -174,8 +174,8 @@ function main()
     --------------------------------------------------------------------------------------
     model:add(nn.TemporalMaxPooling(3, 1))
     
-    model:add(nn.Reshape(20*39, true))
-    model:add(nn.Linear(20*39, 5))
+    model:add(nn.Reshape(20*(39+250), true))
+    model:add(nn.Linear(20*(39+250), 5))
     model:add(nn.LogSoftMax())
 
     criterion = nn.ClassNLLCriterion()
