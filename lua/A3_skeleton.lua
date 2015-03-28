@@ -13,21 +13,7 @@
 -- 
 -- Don't worry about trying to write code that runs on the GPU.
 --
--- Your submission should run on Mercer and contain: 
--- a completed TEAMNAME_A3_skeleton.lua,
---
--- a script TEAMNAME_A3_baseline.lua that is just the provided A3_baseline.lua modified
--- to use your TemporalLogExpPooling module instead of nn.TemporalMaxPooling,
---
--- a saved trained model from TEAMNAME_A3_baseline.lua for which you have done some basic
--- hyperparameter tuning on the training data,
--- 
--- and a script TEAMNAME_A3_gradientcheck.lua that takes as input from stdin:
--- a float epsilon, an integer N, N strings, and N labels (integers 1-5)
--- and prints to stdout the ratios |(FD_epsilon_ijk - exact_ijk) / exact_ijk|
--- where exact_ijk is the backpropagated gradient for weight ijk for the given input
--- and FD_epsilon_ijk is the second-order finite difference of order epsilon
--- of weight ijk for the given input.
+-- Please find submission instructions on the handout
 ------------------------------------------------------------------------
 
 local TemporalLogExpPooling, parent = torch.class('nn.TemporalLogExpPooling', 'nn.Module')
