@@ -13,9 +13,6 @@ function TemporalLogExpPooling:__init(kW, dW, beta)
 end
 
 function TemporalLogExpPooling:updateOutput(input)
-   -----------------------------------------------
-   -- your code here
-   -----------------------------------------------
    
    local input_size = input:size()
    print("input_size:")
@@ -43,9 +40,6 @@ function TemporalLogExpPooling:updateOutput(input)
 end
 
 function TemporalLogExpPooling:updateGradInput(input, gradOutput)
-   -----------------------------------------------
-   -- your code here
-   -----------------------------------------------
 
    local input_size = input:size()
    
@@ -57,18 +51,9 @@ function TemporalLogExpPooling:updateGradInput(input, gradOutput)
    local dOut_dIn_window = torch.DoubleTensor(self.kW, input_size[2])
 
    -- Reset self.gradInput to zeros
+   -- TODO: check if self.gradInput is already of correct dimension and
+   --       reset to zero. This might be better memory management.
    self.gradInput = torch.zeros(input_size)
-
-   -- if self.gradInput == nil then
-   --    print("ha")
-   --    self.gradInput = torch.zeros(input_size)
-   -- else
-   --    print("he")
-   --    print(self.gradInput)
-   --    self.gradInput:zero()
-   -- end
-   print("Declared gradInput")
-   print(self.gradInput)
 
    -- Set loop indexes
    local pos = 1   -- index of first row/element in pooling window
@@ -76,7 +61,7 @@ function TemporalLogExpPooling:updateGradInput(input, gradOutput)
 
    while pos + self.kW - 1 <= input_size[1] do
 
-      -- compute sliding window derivative
+      -- Compute sliding window derivative
       dOut_dIn_window = exp_beta_input[{ {pos, pos + self.kW - 1} }]
       denom_sum[{}] = dOut_dIn_window:sum(1)
       print("denom_sum")
@@ -88,12 +73,16 @@ function TemporalLogExpPooling:updateGradInput(input, gradOutput)
          -- After this dOut_dIn_window contains dOut_dIn derivative
          dOut_dIn_window[{ {},{col_idx} }]:div(denom_sum[1][col_idx])         
 
+         -- Add dE/dx_{i} * dx_{i}/dx_{i-1} to self.gradInput
+         -- TODO: rewrite using several lines for readability
          self.gradInput[{ {pos,pos+self.kW-1},{col_idx} }]:add(dOut_dIn_window[{ {},{col_idx} }]:mul(gradOutput[count][col_idx]))
       end
 
+      -- Update loop counters
       count = count + 1
       pos = pos + self.dW
    end
+
    return self.gradInput
 end
 
