@@ -43,7 +43,28 @@ function TemporalLogExpPooling:updateGradInput(input, gradOutput)
    -----------------------------------------------
    -- your code here
    -----------------------------------------------
-   -- print("SIIIiZE: ", self.output:size())
+
+   local input_length = input:size()[1]
+   local exp_input = input:clone() -- check if this indeed defines a local variable
+   exp_input[{}] = torch.exp(input)
+   self.gradInput = input:clone():zero()
+
+
+   local pos = 1
+   local count = 1
+
+   while pos + (self.kW - 1) <= input_length do
+      
+      -- compute derivative vector
+      local deriv = exp_input[{ {pos, pos+self.kW - 1} }]:clone() -- make local?
+      deriv = deriv:div(deriv:sum())
+
+      self.gradInput[{ {pos, pos+self.kW-1} }]:add(deriv * gradOutput[count])
+
+      count = count + 1
+      pos = pos + self.dW
+   end
+   
    return self.gradInput
 end
 
@@ -64,6 +85,7 @@ end
 ninputs = 10
 
 x = torch.rand(ninputs,1)
+gradOutput = torch.ones(4):div(2)
 print("Input tensor: ")
 print(x)
 
@@ -75,6 +97,17 @@ print(x)
 model = nn.TemporalLogExpPooling(3, 2, .5)
 
 model_out = model:forward(x)
+gradInput = model:backward(x, gradOutput)
 print("Model output: ")
-print(model:forward(x))
--- print(model:backward())
+print(model_out)
+print("Model gradInput: ")
+print(gradInput)
+
+
+-- USING MAX POOLING
+model_max_pooling = nn.TemporalMaxPooling(3, 2)
+
+model_max_pooling_out = model_max_pooling:forward(x)
+print("Max pooling output: ")
+print(model_max_pooling_out)
+grad_input_max_pooling = model_max_pooling:backward(x, model_max_pooling_out)
