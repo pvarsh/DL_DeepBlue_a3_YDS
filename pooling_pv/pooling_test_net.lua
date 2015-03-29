@@ -47,27 +47,53 @@ function TemporalLogExpPooling:updateGradInput(input, gradOutput)
    -- your code here
    -----------------------------------------------
 
-   local input_length = input:size()[1]
-   local exp_input = input:clone() -- check if this indeed defines a local variable
-   exp_input[{}] = torch.exp(input)
-   self.gradInput = input:clone():zero()
+   local input_size = input:size()
+   
+   -- Precompute exp(beta * input)
+   local exp_beta_input = torch.exp(torch.mul(input, self.beta))
 
+   -- Declare tensor for sliding window derivative
+   local denom_sum = torch.DoubleTensor(1, input_size[2])
+   local dOut_dIn_window = torch.DoubleTensor(self.kW, input_size[2])
 
-   local pos = 1
-   local count = 1
+   -- Reset self.gradInput to zeros
+   self.gradInput = torch.zeros(input_size)
 
-   while pos + (self.kW - 1) <= input_length do
-      
-      -- compute derivative vector
-      local deriv = exp_input[{ {pos, pos+self.kW - 1} }]:clone() -- make local?
-      deriv = deriv:div(deriv:sum())
+   -- if self.gradInput == nil then
+   --    print("ha")
+   --    self.gradInput = torch.zeros(input_size)
+   -- else
+   --    print("he")
+   --    print(self.gradInput)
+   --    self.gradInput:zero()
+   -- end
+   print("Declared gradInput")
+   print(self.gradInput)
 
-      self.gradInput[{ {pos, pos+self.kW-1} }]:add(deriv * gradOutput[count])
+   -- Set loop indexes
+   local pos = 1   -- index of first row/element in pooling window
+   local count = 1 -- index of row/element in gradOutput
+
+   while pos + self.kW - 1 <= input_size[1] do
+
+      -- compute sliding window derivative
+      dOut_dIn_window = exp_beta_input[{ {pos, pos + self.kW - 1} }]
+      denom_sum[{}] = dOut_dIn_window:sum(1)
+      print("denom_sum")
+      print(denom_sum)
+
+      -- Loop through columns of dOut_dIn_window
+      for col_idx=1,input_size[2] do
+         -- Divide exp(beta input) by denominator sum
+         -- After this dOut_dIn_window contains dOut_dIn derivative
+         dOut_dIn_window[{ {},{col_idx} }]:div(denom_sum[1][col_idx])         
+
+         self.gradInput[{ {pos,pos+self.kW-1},{col_idx} }]:add(dOut_dIn_window[{ {},{col_idx} }]:mul(gradOutput[count][col_idx]))
+      end
 
       count = count + 1
       pos = pos + self.dW
    end
-   
    return self.gradInput
 end
 
@@ -86,8 +112,9 @@ end
 
 -- TEST SCRIPT FOR THE ABOVE FUNCTIONS
 ninputs = 10
+batch_size = 2
 
-x = torch.rand(ninputs,2)
+x = torch.rand(ninputs, batch_size)
 gradOutput = torch.ones(4):div(2)
 print("Input tensor: ")
 print(x)
@@ -99,12 +126,20 @@ print(x)
 -- If TemporalLogExpPooling is used without nn.Sequential container, it seems to work
 model = nn.TemporalLogExpPooling(3, 2, .5)
 
+-- Feed forward
 model_out = model:forward(x)
--- gradInput = model:backward(x, gradOutput)
 print("Model output: ")
 print(model_out)
+
+-- Define fake gradOutput to feed backward
+gradOutput = torch.ones(model_out:size()):div(2)
+print("gradOutput")
+print(gradOutput)
+
+-- Feed backward
+gradInput = model:backward(x, gradOutput)
 print("Model gradInput: ")
--- print(gradInput)
+print(gradInput)
 
 
 -- USING MAX POOLING
