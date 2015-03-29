@@ -109,11 +109,12 @@ print("Input tensor: ")
 print(x)
 
 -- If TemporalLogExpPooling is added to a nn.Sequential() model, it breaks on :add() function
--- model = nn.Sequential()
--- model:add(TemporalLogExpPooling(3,1,.5))
+model = nn.Sequential()
+model:add(nn.TemporalLogExpPooling(3,1,.5))
+-- model:add(nn.TemporalMaxPooling(3,2))
 
 -- If TemporalLogExpPooling is used without nn.Sequential container, it seems to work
-model = nn.TemporalLogExpPooling(3, 2, .5)
+-- model = nn.TemporalLogExpPooling(3, 2, .5)
 
 -- Feed forward
 model_out = model:forward(x)
