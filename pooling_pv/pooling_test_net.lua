@@ -17,20 +17,23 @@ function TemporalLogExpPooling:updateOutput(input)
    -- your code here
    -----------------------------------------------
    
-   local input_length = input:size()[1]
-   local output_length = math.floor((input_length - self.kW)/self.dW + 1)
-   -- print("Output length: ", output_length)
-   self.output = torch.DoubleTensor(output_length)
-   local y = torch.DoubleTensor(input:size())
+   local input_size = input:size()
+   print("input_size:")
+   print(input_size)
+   local output_size = torch.LongStorage(2)
+   output_size[1] = math.floor((input_size[1] - self.kW)/self.dW + 1)
+   output_size[2] = input_size[2]
 
-   y:mul(input, self.beta) -- multiplication and exponentiation
-   y:exp()                 -- only is done once
+   self.output = torch.DoubleTensor(output_size)
+   local exp_beta_x = torch.DoubleTensor(input_size)
+
+   exp_beta_x:mul(input, self.beta) -- multiplication and exponentiation
+   exp_beta_x:exp()                 -- only is done once
    
    local pos = 1
    local count = 1
-   while pos + (self.kW - 1) <= input_length do
-      -- print("Position", pos)
-      self.output[count] = y[{ {pos,(pos + self.kW - 1)} }]:sum()
+   while pos + (self.kW - 1) <= input_size[1] do
+      self.output[count] = exp_beta_x[{ {pos,(pos + self.kW - 1)} }]:sum()
       pos = pos + self.dW
       count = count + 1
    end
@@ -84,7 +87,7 @@ end
 -- TEST SCRIPT FOR THE ABOVE FUNCTIONS
 ninputs = 10
 
-x = torch.rand(ninputs,1)
+x = torch.rand(ninputs,2)
 gradOutput = torch.ones(4):div(2)
 print("Input tensor: ")
 print(x)
@@ -97,11 +100,11 @@ print(x)
 model = nn.TemporalLogExpPooling(3, 2, .5)
 
 model_out = model:forward(x)
-gradInput = model:backward(x, gradOutput)
+-- gradInput = model:backward(x, gradOutput)
 print("Model output: ")
 print(model_out)
 print("Model gradInput: ")
-print(gradInput)
+-- print(gradInput)
 
 
 -- USING MAX POOLING
