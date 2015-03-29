@@ -15,8 +15,6 @@ end
 function TemporalLogExpPooling:updateOutput(input)
    
    local input_size = input:size()
-   print("input_size:")
-   print(input_size)
    local output_size = torch.LongStorage(2)
    output_size[1] = math.floor((input_size[1] - self.kW)/self.dW + 1)
    output_size[2] = input_size[2]
@@ -35,7 +33,6 @@ function TemporalLogExpPooling:updateOutput(input)
       count = count + 1
    end
    ((self.output:mul(1/self.kW)):log()):mul(1/self.beta)
-
    return self.output
 end
 
@@ -64,8 +61,6 @@ function TemporalLogExpPooling:updateGradInput(input, gradOutput)
       -- Compute sliding window derivative
       dOut_dIn_window = exp_beta_input[{ {pos, pos + self.kW - 1} }]
       denom_sum[{}] = dOut_dIn_window:sum(1)
-      print("denom_sum")
-      print(denom_sum)
 
       -- Loop through columns of dOut_dIn_window
       for col_idx=1,input_size[2] do
@@ -139,3 +134,42 @@ model_max_pooling_out = model_max_pooling:forward(x)
 print("Max pooling output: ")
 print(model_max_pooling_out)
 grad_input_max_pooling = model_max_pooling:backward(x, model_max_pooling_out)
+
+
+--------------------------------------------------------------------
+-- SOME TESTS
+
+print("SOME TESTS")
+x = torch.Tensor(3,1)
+x[1] = 1
+x[2] = 2
+x[3] = 3
+beta = 1
+output = torch.Tensor(2,1)
+gradOutput = torch.Tensor(2,1)
+gradInput = torch.Tensor(3,1)
+gradOutput[1] = 0.5
+gradOutput[2] = 0.2
+
+-- Compute output 'by hand'
+exp_beta_x = x:clone():mul(beta):exp()
+output[1] = torch.log((exp_beta_x[1] + exp_beta_x[2])*1/2) * 1/beta
+output[2] = torch.log((exp_beta_x[2] + exp_beta_x[3])*1/2) * 1/beta
+print("Manually computed output: ")
+print(output)
+
+-- Compute output using module
+model = nn.TemporalLogExpPooling(2,1,beta)
+print("TemporalLogExpPooling forward output: ")
+print(model:forward(x))
+
+gradInput[1] = exp_beta_x[1] / (exp_beta_x[1][1] + exp_beta_x[2][1]) * gradOutput[1]
+gradInput[2] = exp_beta_x[2] / (exp_beta_x[1][1] + exp_beta_x[2][1]) * gradOutput[1] + exp_beta_x[2] / (exp_beta_x[2][1] + exp_beta_x[3][1]) * gradOutput[2]
+gradInput[3] = exp_beta_x[3] / (exp_beta_x[2][1] + exp_beta_x[3][1]) * gradOutput[2]
+
+print("Manually computed gradInput")
+print(gradInput)
+print("TemporalLogExpPooling backward output: ")
+print(model:backward(x, gradOutput))
+
+
