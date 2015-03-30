@@ -44,8 +44,8 @@ function TemporalLogExpPooling:updateGradInput(input, gradOutput)
    local exp_beta_input = torch.exp(torch.mul(input, self.beta))
 
    -- Declare tensor for sliding window derivative
-   local denom_sum = torch.DoubleTensor(1, input_size[2])
-   local dOut_dIn_window = torch.DoubleTensor(self.kW, input_size[2])
+   local denom_sum = torch.Tensor(1, input_size[2])
+   local dOut_dIn_window = torch.Tensor(self.kW, input_size[2])
 
    -- Reset self.gradInput to zeros
    -- TODO: check if self.gradInput is already of correct dimension and
@@ -59,7 +59,7 @@ function TemporalLogExpPooling:updateGradInput(input, gradOutput)
    while pos + self.kW - 1 <= input_size[1] do
 
       -- Compute sliding window derivative
-      dOut_dIn_window = exp_beta_input[{ {pos, pos + self.kW - 1} }]
+      dOut_dIn_window[{}] = exp_beta_input[{ {pos, pos + self.kW - 1} }]
       denom_sum[{}] = dOut_dIn_window:sum(1)
 
       -- Loop through columns of dOut_dIn_window
