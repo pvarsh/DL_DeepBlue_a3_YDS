@@ -20,15 +20,19 @@ function TemporalLogExpPooling:updateOutput(input)
    output_size[2] = input_size[2]
 
    self.output = torch.DoubleTensor(output_size)
+   -- print('self.output:size()')
+   -- print(self.output)
    local exp_beta_x = torch.DoubleTensor(input_size)
 
    exp_beta_x:mul(input, self.beta) -- multiplication and exponentiation
    exp_beta_x:exp()                 -- only is done once
+   -- print('updateOutput:: exp_beta_x')
+   -- print(exp_beta_x)
    
    local pos = 1
    local count = 1
    while pos + (self.kW - 1) <= input_size[1] do
-      self.output[count] = exp_beta_x[{ {pos,(pos + self.kW - 1)} }]:sum()
+      self.output[count] = exp_beta_x[{ {pos,(pos + self.kW - 1)} }]:sum(1)
       pos = pos + self.dW
       count = count + 1
    end
@@ -139,7 +143,8 @@ grad_input_max_pooling = model_max_pooling:backward(x, model_max_pooling_out)
 --------------------------------------------------------------------
 -- SOME TESTS
 
-print("SOME TESTS")
+print(">>>>>>>>>>SOME TESTS")
+print(">> TEST 1")
 x = torch.Tensor(3,1)
 x[1] = 1
 x[2] = 2
@@ -172,4 +177,55 @@ print(gradInput)
 print("TemporalLogExpPooling backward output: ")
 print(model:backward(x, gradOutput))
 
+print(">> TEST 2")
+x = torch.Tensor(4,2)
+x[1][1] = 1
+x[2][1] = 2
+x[3][1] = 3
+x[4][1] = 4
+x[1][2] = 4
+x[2][2] = 3
+x[3][2] = 2
+x[4][2] = 1
+beta = .5
+N = 2
+step = 1
+output = torch.Tensor(3,2)
+gradOutput = torch.Tensor(3,2)
+gradInput = torch.Tensor(4,2)
+gradOutput[1][1] = 0.5
+gradOutput[2][1] = 0.4
+gradOutput[3][1] = 0.3
+gradOutput[1][2] = 0.6
+gradOutput[2][2] = 0.7
+gradOutput[3][2] = 0.8
 
+
+-- Compute output 'by hand'
+exp_beta_x = x:clone():mul(beta):exp()
+-- print("x:")
+-- print(x)
+-- print("exp_beta_x")
+-- print(exp_beta_x)
+output[1][1] = torch.log((exp_beta_x[1][1] + exp_beta_x[2][1])*1/N) * 1/beta
+output[2][1] = torch.log((exp_beta_x[2][1] + exp_beta_x[3][1])*1/N) * 1/beta
+output[3][1] = torch.log((exp_beta_x[3][1] + exp_beta_x[4][1])*1/N) * 1/beta
+output[1][2] = torch.log((exp_beta_x[1][2] + exp_beta_x[2][2])*1/N) * 1/beta
+output[2][2] = torch.log((exp_beta_x[2][2] + exp_beta_x[3][2])*1/N) * 1/beta
+output[3][2] = torch.log((exp_beta_x[3][2] + exp_beta_x[4][2])*1/N) * 1/beta
+print("Manually computed output: ")
+print(output)
+
+-- Compute output using module
+model = nn.TemporalLogExpPooling(N,step,beta)
+print("TemporalLogExpPooling forward output: ")
+print(model:forward(x))
+
+-- gradInput[1] = exp_beta_x[1] / (exp_beta_x[1][1] + exp_beta_x[2][1]) * gradOutput[1]
+-- gradInput[2] = exp_beta_x[2] / (exp_beta_x[1][1] + exp_beta_x[2][1]) * gradOutput[1] + exp_beta_x[2] / (exp_beta_x[2][1] + exp_beta_x[3][1]) * gradOutput[2]
+-- gradInput[3] = exp_beta_x[3] / (exp_beta_x[2][1] + exp_beta_x[3][1]) * gradOutput[2]
+
+-- print("Manually computed gradInput")
+-- print(gradInput)
+-- print("TemporalLogExpPooling backward output: ")
+-- print(model:backward(x, gradOutput))
