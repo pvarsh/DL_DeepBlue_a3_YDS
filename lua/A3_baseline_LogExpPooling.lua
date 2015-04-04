@@ -1,7 +1,7 @@
 require 'torch'
 require 'nn'
 require 'optim'
-
+require 'A3_skeleton'
 
 ffi = require('ffi')
 
