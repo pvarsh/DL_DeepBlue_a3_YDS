@@ -90,7 +90,7 @@ function TemporalLogExpPooling:updateGradInput(input, gradOutput)
             local denom_sum = exp_beta_x[{ batch_idx, {gradInput_win_start, gradInput_end}, frame_idx }]:sum()
 
             local dOut_dIn = exp_beta_x[{batch_idx, {gradInput_win_start, gradInput_win_end}, frame_idx}]:clone():div(denom_sum)
-            self.gradInput:add(dOut_dIn:mul(gradOutput[batch_idx, step_idx, frame_idx]))
+            self.gradInput:add(dOut_dIn:mul(gradOutput[{batch_idx, step_idx, frame_idx}]))
          end
       end
    end
