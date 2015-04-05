@@ -52,10 +52,10 @@ function TemporalLogExpPooling:updateOutput(input)
          for vec_idx = 1,output_size[2] do
             print(vec_idx*self.dW, vec_idx*self.dW + self.kW - 1)
             local operand = input[{ batch_idx, {vec_idx*self.dW, vec_idx*self.dW + self.kW - 1}, frame_idx }]
-	    operand = operand:sum()
+            operand = operand:sum()
             operand = operand / self.kW
             operand = torch.log(operand)
-	    operand = operand / self.beta
+            operand = operand / self.beta
            
             self.output[{ batch_idx, vec_idx, frame_idx }] = operand
          end -- end: feature vector loop
@@ -69,6 +69,12 @@ end
 function TemporalLogExpPooling:updateGradInput(input, gradOutput)
    
    --------- OUR CODE
+
+   print('Input size:: ')
+   print(input:size())
+   print('gradOutput size:: ')
+   print(gradOutput:size())
+
    local input_size = input:size()
    
    -- Precompute exp(beta * input)
