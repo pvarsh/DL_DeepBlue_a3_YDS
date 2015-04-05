@@ -50,14 +50,14 @@ function TemporalLogExpPooling:updateOutput(input)
    for batch_idx = 1,input_size[1] do
       for frame_idx = 1,input_size[3] do
          for step_idx = 1,output_size[2] do
-            -- print(step_idx*self.dW, step_idx*self.dW + self.kW - 1)
-            local operand = input[{ batch_idx, {step_idx*self.dW, step_idx*self.dW + self.kW - 1}, frame_idx }]
-            operand = operand:sum()
-            operand = operand / self.kW
-            operand = torch.log(operand)
-            operand = operand / self.beta
+            local window_start = (step_idx - 1)*self.dW + 1
+            local window_end   = window_start + self.kW - 1
+            local window_out = input[{ batch_idx, {window_start, window_end}, frame_idx }]:sum()
+            window_out = window_out / self.kW
+            window_out = torch.log(window_out)
+            window_out = window_out / self.beta
            
-            self.output[{ batch_idx, step_idx, frame_idx }] = operand
+            self.output[{ batch_idx, step_idx, frame_idx }] = window_out
          end -- end: feature vector loop
       end -- end: frame loop
    end -- end: minibatch loop
