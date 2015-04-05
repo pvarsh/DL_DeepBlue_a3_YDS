@@ -49,15 +49,15 @@ function TemporalLogExpPooling:updateOutput(input)
    
    for batch_idx = 1,input_size[1] do
       for frame_idx = 1,input_size[3] do
-         for vec_idx = 1,output_size[2] do
-            print(vec_idx*self.dW, vec_idx*self.dW + self.kW - 1)
-            local operand = input[{ batch_idx, {vec_idx*self.dW, vec_idx*self.dW + self.kW - 1}, frame_idx }]
+         for step_idx = 1,output_size[2] do
+            print(step_idx*self.dW, step_idx*self.dW + self.kW - 1)
+            local operand = input[{ batch_idx, {step_idx*self.dW, step_idx*self.dW + self.kW - 1}, frame_idx }]
             operand = operand:sum()
             operand = operand / self.kW
             operand = torch.log(operand)
             operand = operand / self.beta
            
-            self.output[{ batch_idx, vec_idx, frame_idx }] = operand
+            self.output[{ batch_idx, step_idx, frame_idx }] = operand
          end -- end: feature vector loop
       end -- end: frame loop
    end -- end: minibatch loop
@@ -75,45 +75,65 @@ function TemporalLogExpPooling:updateGradInput(input, gradOutput)
    print('gradOutput size:: ')
    print(gradOutput:size())
 
-   local input_size = input:size()
-   
-   -- Precompute exp(beta * input)
-   local exp_beta_input = torch.exp(torch.mul(input, self.beta))
 
-   -- Declare tensor for sliding window derivative
-   local denom_sum = torch.Tensor(1, input_size[2])
-   local dOut_dIn_window = torch.Tensor(self.kW, input_size[2])
+   local in_size = input:size()
+   local out_size = gradOutput:size()
 
-   -- Reset self.gradInput to zeros
-   -- TODO: check if self.gradInput is already of correct dimension and
-   --       reset to zero. This might be better memory management.
-   self.gradInput = torch.zeros(input_size)
+   self.gradInput = torch.zeros(in_size)
+   local exp_beta_x = input:clone():mul(self.beta):exp()
 
-   -- Set loop indexes
-   local pos = 1   -- index of first row/element in pooling window
-   local count = 1 -- index of row/element in gradOutput
+   for batch_idx=1,out_size[1] do
+      for frame_idx=1,out_size[3] do
+         for step_idx=1,out_size[2] do
+            local gradInput_win_start = (step_idx - 1)*self.dW + 1
+            local gradInput_win_end   = gradInput_win_start + self.kW - 1
+            local denom_sum = exp_beta_x[{ batch_idx, {gradInput_win_start, gradInput_end}, frame_idx }]:sum()
 
-   while pos + self.kW - 1 <= input_size[1] do
-
-      -- Compute sliding window derivative
-      dOut_dIn_window[{}] = exp_beta_input[{ {pos, pos + self.kW - 1} }]
-      denom_sum[{}] = dOut_dIn_window:sum(1)
-
-      -- Loop through columns of dOut_dIn_window
-      for col_idx=1,input_size[2] do
-         -- Divide exp(beta input) by denominator sum
-         -- After this dOut_dIn_window contains dOut_dIn derivative
-         dOut_dIn_window[{ {},{col_idx} }]:div(denom_sum[1][col_idx])         
-
-         -- Add dE/dx_{i} * dx_{i}/dx_{i-1} to self.gradInput
-         -- TODO: rewrite using several lines for readability
-         self.gradInput[{ {pos,pos+self.kW-1},{col_idx} }]:add(dOut_dIn_window[{ {},{col_idx} }]:mul(gradOutput[count][col_idx]))
+            local dOut_dIn = exp_beta_x[{batch_idx, {gradInput_win_start, gradInput_win_end}, frame_idx}]:clone():div(denom_sum)
+            self.gradInput:add(dOut_dIn:mul(gradOutput[batch_idx, step_idx, frame_idx]))
+         end
       end
-
-      -- Update loop counters
-      count = count + 1
-      pos = pos + self.dW
    end
+
+   -- local input_size = input:size()
+   
+   -- -- Precompute exp(beta * input)
+   -- local exp_beta_input = torch.exp(torch.mul(input, self.beta))
+
+   -- -- Declare tensor for sliding window derivative
+   -- local denom_sum = torch.Tensor(1, input_size[2])
+   -- local dOut_dIn_window = torch.Tensor(self.kW, input_size[2])
+
+   -- -- Reset self.gradInput to zeros
+   -- -- TODO: check if self.gradInput is already of correct dimension and
+   -- --       reset to zero. This might be better memory management.
+   -- self.gradInput = torch.zeros(input_size)
+
+   -- -- Set loop indexes
+   -- local pos = 1   -- index of first row/element in pooling window
+   -- local count = 1 -- index of row/element in gradOutput
+
+   -- while pos + self.kW - 1 <= input_size[1] do
+
+   --    -- Compute sliding window derivative
+   --    dOut_dIn_window[{}] = exp_beta_input[{ {pos, pos + self.kW - 1} }]
+   --    denom_sum[{}] = dOut_dIn_window:sum(1)
+
+   --    -- Loop through columns of dOut_dIn_window
+   --    for col_idx=1,input_size[2] do
+   --       -- Divide exp(beta input) by denominator sum
+   --       -- After this dOut_dIn_window contains dOut_dIn derivative
+   --       dOut_dIn_window[{ {},{col_idx} }]:div(denom_sum[1][col_idx])         
+
+   --       -- Add dE/dx_{i} * dx_{i}/dx_{i-1} to self.gradInput
+   --       -- TODO: rewrite using several lines for readability
+   --       self.gradInput[{ {pos,pos+self.kW-1},{col_idx} }]:add(dOut_dIn_window[{ {},{col_idx} }]:mul(gradOutput[count][col_idx]))
+   --    end
+
+   --    -- Update loop counters
+   --    count = count + 1
+   --    pos = pos + self.dW
+   -- end
    --------- END: OUR CODE
    return self.gradInput
 end
