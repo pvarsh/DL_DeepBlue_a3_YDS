@@ -31,10 +31,13 @@ end
 function TemporalLogExpPooling:updateOutput(input)
 
    --------- OUR CODE
+   
    local input_size = input:size()
-   local output_size = torch.LongStorage(2)
-   output_size[1] = math.floor((input_size[1] - self.kW)/self.dW + 1)
-   output_size[2] = input_size[2]
+   local output_size = torch.LongStorage(3)
+
+   output_size[1] = input_size[1]
+   output_size[2] = math.floor((input_size[1] - self.kW)/self.dW)
+   output_size[3] = input_size[3]
 
    self.output = torch.DoubleTensor(output_size)
    -- print('self.output:size()')
@@ -43,17 +46,14 @@ function TemporalLogExpPooling:updateOutput(input)
 
    exp_beta_x:mul(input, self.beta) -- multiplication and exponentiation
    exp_beta_x:exp()                 -- only is done once
-   -- print('updateOutput:: exp_beta_x')
-   -- print(exp_beta_x)
    
-   local pos = 1
-   local count = 1
-   while pos + (self.kW - 1) <= input_size[1] do
-      self.output[count] = exp_beta_x[{ {pos,(pos + self.kW - 1)} }]:sum(1)
-      pos = pos + self.dW
-      count = count + 1
-   end
-   ((self.output:mul(1/self.kW)):log()):mul(1/self.beta)
+   for batch_idx = 1,input_size[1] do
+      for frame_idx = 1,input_size[3] do
+         for vec_idx = 1,output_size[2] do
+            self.output[{ batch_idx, vec_idx, frame_idx }] = ((input[{ batch_idx, {vec_idx*self.dW, vec_idx*self.dW + self.kW}, frame_idx }]:sum()):div(self.kW):log()):div(self.beta)
+         end -- end: feature vector loop
+      end -- end: frame loop
+   end -- end: minibatch loop
    --------- END: OUR CODE
 
    return self.output
