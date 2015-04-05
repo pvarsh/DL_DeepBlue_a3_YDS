@@ -50,7 +50,7 @@ function TemporalLogExpPooling:updateOutput(input)
    for batch_idx = 1,input_size[1] do
       for frame_idx = 1,input_size[3] do
          for step_idx = 1,output_size[2] do
-            print(step_idx*self.dW, step_idx*self.dW + self.kW - 1)
+            -- print(step_idx*self.dW, step_idx*self.dW + self.kW - 1)
             local operand = input[{ batch_idx, {step_idx*self.dW, step_idx*self.dW + self.kW - 1}, frame_idx }]
             operand = operand:sum()
             operand = operand / self.kW
@@ -70,10 +70,10 @@ function TemporalLogExpPooling:updateGradInput(input, gradOutput)
    
    --------- OUR CODE
 
-   print('Input size:: ')
-   print(input:size())
-   print('gradOutput size:: ')
-   print(gradOutput:size())
+   -- print('Input size:: ')
+   -- print(input:size())
+   -- print('gradOutput size:: ')
+   -- print(gradOutput:size())
 
 
    local in_size = input:size()
@@ -87,10 +87,10 @@ function TemporalLogExpPooling:updateGradInput(input, gradOutput)
          for step_idx=1,out_size[2] do
             local gradInput_win_start = (step_idx - 1)*self.dW + 1
             local gradInput_win_end   = gradInput_win_start + self.kW - 1
-            local denom_sum = exp_beta_x[{ batch_idx, {gradInput_win_start, gradInput_end}, frame_idx }]:sum()
+            local denom_sum = exp_beta_x[{ batch_idx, {gradInput_win_start, gradInput_win_end}, frame_idx }]:sum()
 
             local dOut_dIn = exp_beta_x[{batch_idx, {gradInput_win_start, gradInput_win_end}, frame_idx}]:clone():div(denom_sum)
-            self.gradInput:add(dOut_dIn:mul(gradOutput[{batch_idx, step_idx, frame_idx}]))
+            self.gradInput[{ batch_idx, {gradInput_win_start, gradInput_win_end}, frame_idx }]:add(dOut_dIn:mul(gradOutput[{batch_idx, step_idx, frame_idx}]))
          end
       end
    end
