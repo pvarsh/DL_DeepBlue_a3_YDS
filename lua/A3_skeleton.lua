@@ -36,7 +36,7 @@ function TemporalLogExpPooling:updateOutput(input)
    local output_size = torch.LongStorage(3)
 
    output_size[1] = input_size[1]
-   output_size[2] = math.floor((input_size[1] - self.kW)/self.dW)
+   output_size[2] = math.floor((input_size[2] + 1 - self.kW)/self.dW)
    output_size[3] = input_size[3]
 
    self.output = torch.DoubleTensor(output_size)
@@ -50,7 +50,14 @@ function TemporalLogExpPooling:updateOutput(input)
    for batch_idx = 1,input_size[1] do
       for frame_idx = 1,input_size[3] do
          for vec_idx = 1,output_size[2] do
-            self.output[{ batch_idx, vec_idx, frame_idx }] = ((input[{ batch_idx, {vec_idx*self.dW, vec_idx*self.dW + self.kW}, frame_idx }]:sum()):div(self.kW):log()):div(self.beta)
+            print(vec_idx*self.dW, vec_idx*self.dW + self.kW - 1)
+            local operand = input[{ batch_idx, {vec_idx*self.dW, vec_idx*self.dW + self.kW - 1}, frame_idx }]
+	    operand = operand:sum()
+            operand = operand / self.kW
+            operand = torch.log(operand)
+	    operand = operand / self.beta
+           
+            self.output[{ batch_idx, vec_idx, frame_idx }] = operand
          end -- end: feature vector loop
       end -- end: frame loop
    end -- end: minibatch loop
