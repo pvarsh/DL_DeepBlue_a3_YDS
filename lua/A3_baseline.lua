@@ -154,6 +154,8 @@ function main(opt)
         model:add(nn.TemporalMaxPooling(3, 1))
     elseif opt.pooling == 'logexp' then
         model:add(nn.TemporalLogExpPooling(3, 1, opt.beta))
+    else
+        error("opt.pooling must be 'max' or 'logexp'")
     end
     
     model:add(nn.Reshape(20*(opt.inputDim-11), true))
@@ -194,6 +196,7 @@ if not opt then
    cmd:text()
    opt = cmd:parse(arg or {})
    opt.glovePath = opt.glovePath .. 'glove.6B.' .. opt.inputDim .. 'd.txt'
+   opt.nBatches = math.floor(opt.nTrainDocs / opt.minibatchSize)
 end
 print(opt)
 main(opt)
