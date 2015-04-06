@@ -88,7 +88,7 @@ function train_model(model, criterion, data, labels, test_data, test_labels, opt
         local minibatch_labels = labels:sub(opt.idx, opt.idx + opt.minibatchSize - 1):clone()
         
         model:training()
-        print("minibatch tensor shape", minibatch[1]:size())
+        -- print("minibatch tensor shape", minibatch[1]:size())
         local minibatch_loss = criterion:forward(model:forward(minibatch), minibatch_labels)
         model:zeroGradParameters()
         model:backward(minibatch, criterion:backward(model.output, minibatch_labels))
