@@ -84,10 +84,11 @@ function train_model(model, criterion, data, labels, test_data, test_labels, opt
     
     -- optimization functional to train the model with torch's optim library
     local function feval(x) 
-        local minibatch = data:sub(opt.idx, opt.idx + opt.minibatchSize, 1, data:size(2)):clone()
-        local minibatch_labels = labels:sub(opt.idx, opt.idx + opt.minibatchSize):clone()
+        local minibatch = data:sub(opt.idx, opt.idx + opt.minibatchSize - 1, 1, data:size(2)):clone()
+        local minibatch_labels = labels:sub(opt.idx, opt.idx + opt.minibatchSize - 1):clone()
         
         model:training()
+        print("minibatch tensor shape", minibatch[1]:size())
         local minibatch_loss = criterion:forward(model:forward(minibatch), minibatch_labels)
         model:zeroGradParameters()
         model:backward(minibatch, criterion:backward(model.output, minibatch_labels))
@@ -149,7 +150,7 @@ function main(opt)
    
     -- if you decide to just adapt the baseline code for part 2, you'll probably want to make this linear and remove pooling
     -- model:add(nn.TemporalConvolution(1, 20, 10, 1))
-    model:add(nn.Linear(10*opt.inputDim, 20*(opt.inputDim-11)))
+    model:add(nn.Linear(opt.inputDim, 20*(opt.inputDim-11)))
     
     -- if opt.pooling == 'max' then
     --     model:add(nn.TemporalMaxPooling(3, 1))
@@ -164,7 +165,7 @@ function main(opt)
     model:add(nn.LogSoftMax())
 
     criterion = nn.ClassNLLCriterion()
-   
+    print(model) 
     print("Training...")
     train_model(model, criterion, training_data, training_labels, test_data, test_labels, opt)
     local results = test_model(model, test_data, test_labels)
