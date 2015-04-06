@@ -123,8 +123,9 @@ function test_model(model, data, labels, opt)
     return err
 end
 
-function main()
+function main(opt)
 
+    print(opt)
     -- Configuration parameters
     opt = {}
     -- word vector dimensionality
@@ -174,8 +175,12 @@ function main()
     --------------------------------------------------------------------------------------
     -- Replace this temporal max-pooling module with your log-exponential pooling module:
     --------------------------------------------------------------------------------------
-    -- model:add(nn.TemporalMaxPooling(3, 1))
-    model:add(nn.TemporalLogExpPooling(3,1,20))
+    if opt.pooling == 'max' then
+        model:add(nn.TemporalMaxPooling(3, 1))
+    end
+    if opt.pooling == 'logexp' then
+        model:add(nn.TemporalLogExpPooling(3,1,20))
+    end
     
     model:add(nn.Reshape(20*(opt.inputDim-11), true))
     model:add(nn.Linear(20*(opt.inputDim-11), 5))
@@ -189,4 +194,31 @@ function main()
     print(results)
 end
 
-main()
+
+--------------------------------------------------------------------------------------
+-- Command line options
+--------------------------------------------------------------------------------------
+if not opt then
+   print '==> processing options'
+   cmd = torch.CmdLine()
+   cmd:text()
+   cmd:text()
+   cmd:text('Options:')
+   cmd:option('-pooling', 'max', '[max | logexp] pooling')
+   cmd:option('-inputDim', 50, 'word vector dimension: [50 | 100 | 200 | 300]')
+   cmd:option('-glovePath', '/scratch/courses/DSGA1008/A3/glove/', 'path to GloVe files')
+   cmd:option('-dataPath', '/scratch/courses/DSGA1008/A3/data/train.t7b', 'path to data')
+   cmd:option('-nTrainDocs', 10000, 'number of training documents in each class')
+   cmd:option('-nTestDocs', 0, 'number of test documents in each class')
+   cmd:option('-nClasses', 5, 'number of classes')
+   cmd:option('-nEpochs', 50, 'number of training epochs')
+   cmd:option('-minibatchSize', 128, 'minibatch size')
+   cmd:option('-learningRate', 0.1, 'learning rate')
+   cmd:option('-learningRateDecay', 0.001, 'learning rate decay')
+   cmd:option('-momentum', 0.1, 'SGD momentum')
+   cmd:text()
+   opt = cmd:parse(arg or {})
+   opt.glovePath = opt.glovePath .. 'glove.6B.' .. opt.inputDim .. 'd.txt'
+end
+print(opt)
+-- main(opt)
