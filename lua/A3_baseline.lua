@@ -125,28 +125,6 @@ end
 
 function main(opt)
 
-    print(opt)
-    -- Configuration parameters
-    opt = {}
-    -- word vector dimensionality
-    opt.inputDim = 50
-    -- change these to the appropriate data locations
-    -- path to raw glove data .txt file
-    opt.glovePath = "/scratch/courses/DSGA1008/A3/glove/glove.6B." .. opt.inputDim .. "d.txt" 
-    opt.dataPath = "/scratch/courses/DSGA1008/A3/data/train.t7b"
-    -- nTrainDocs is the number of documents per class used in the training set, i.e.
-    -- here we take the first nTrainDocs documents from each class as training samples
-    -- and use the rest as a validation set.
-    opt.nTrainDocs = 10000
-    opt.nTestDocs = 0
-    opt.nClasses = 5
-    -- SGD parameters - play around with these
-    opt.nEpochs = 50
-    opt.minibatchSize = 128 
-    opt.nBatches = math.floor(opt.nTrainDocs / opt.minibatchSize)
-    opt.learningRate = 0.2
-    opt.learningRateDecay = 0.001
-    opt.momentum = 0.1
     opt.idx = 1
 
     print("Loading word vectors...")
@@ -172,14 +150,10 @@ function main(opt)
     -- if you decide to just adapt the baseline code for part 2, you'll probably want to make this linear and remove pooling
     model:add(nn.TemporalConvolution(1, 20, 10, 1))
     
-    --------------------------------------------------------------------------------------
-    -- Replace this temporal max-pooling module with your log-exponential pooling module:
-    --------------------------------------------------------------------------------------
     if opt.pooling == 'max' then
         model:add(nn.TemporalMaxPooling(3, 1))
-    end
-    if opt.pooling == 'logexp' then
-        model:add(nn.TemporalLogExpPooling(3,1,20))
+    elseif opt.pooling == 'logexp' then
+        model:add(nn.TemporalLogExpPooling(3, 1, opt.beta))
     end
     
     model:add(nn.Reshape(20*(opt.inputDim-11), true))
@@ -205,6 +179,7 @@ if not opt then
    cmd:text()
    cmd:text('Options:')
    cmd:option('-pooling', 'max', '[max | logexp] pooling')
+   cmd:option('-beta', 20, 'LogExp pooling beta parameter')
    cmd:option('-inputDim', 50, 'word vector dimension: [50 | 100 | 200 | 300]')
    cmd:option('-glovePath', '/scratch/courses/DSGA1008/A3/glove/', 'path to GloVe files')
    cmd:option('-dataPath', '/scratch/courses/DSGA1008/A3/data/train.t7b', 'path to data')
