@@ -152,7 +152,8 @@ function main(opt)
     -- model:add(nn.TemporalConvolution(1, 20, 10, 1))
     model:add(nn.Reshape(opt.minibatchSize*opt.inputDim))
     model:add(nn.Linear(opt.minibatchSize*opt.inputDim, 20*(opt.inputDim-11)))
-    model:add(nn.ReLU()) 
+    model:add(nn.ReLU())
+    model:add(nn.Dropout(0.5)) 
     -- if opt.pooling == 'max' then
     --     model:add(nn.TemporalMaxPooling(3, 1))
     -- elseif opt.pooling == 'logexp' then
