@@ -1,6 +1,7 @@
 require 'torch'
 require 'nn'
 require 'optim'
+require 'A3_skeleton-vectorized.lua'
 
 ffi = require('ffi')
 
@@ -140,9 +141,9 @@ function main()
     opt.nClasses = 5
     -- SGD parameters - play around with these
     opt.nEpochs = 50
-    opt.minibatchSize = 128
+    opt.minibatchSize = 128 
     opt.nBatches = math.floor(opt.nTrainDocs / opt.minibatchSize)
-    opt.learningRate = 0.1
+    opt.learningRate = 0.2
     opt.learningRateDecay = 0.001
     opt.momentum = 0.1
     opt.idx = 1
@@ -173,7 +174,8 @@ function main()
     --------------------------------------------------------------------------------------
     -- Replace this temporal max-pooling module with your log-exponential pooling module:
     --------------------------------------------------------------------------------------
-    model:add(nn.TemporalMaxPooling(3, 1))
+    -- model:add(nn.TemporalMaxPooling(3, 1))
+    model:add(nn.TemporalLogExpPooling(3,1,20))
     
     model:add(nn.Reshape(20*(opt.inputDim-11), true))
     model:add(nn.Linear(20*(opt.inputDim-11), 5))
