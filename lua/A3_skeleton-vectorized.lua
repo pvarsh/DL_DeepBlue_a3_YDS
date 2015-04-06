@@ -39,13 +39,13 @@ function TemporalLogExpPooling:updateOutput(input)
    output_size[3] = input_size[3]
 
    -- Check if self.output exists (nonzero dimension)
-   if self.output:dim() == 0 then 
-      self.output = torch.Tensor(output_size)
-   end
+   -- if self.output:dim() == 0 then 
+   --   self.output = torch.Tensor(output_size)
+   -- end
+   self.output = torch.Tensor(output_size)
 
    local exp_beta_x = input:clone()
    exp_beta_x:mul(self.beta):exp()
-
    for step_idx=1,output_size[2] do
       local win_start = (step_idx - 1)*self.dW + 1
       local win_end   = win_start + self.kW - 1
@@ -77,8 +77,8 @@ function TemporalLogExpPooling:updateGradInput(input, gradOutput)
       local win_end = win_start + self.kW - 1
       local window = exp_beta_x[{ {}, {win_start,win_end}, {} }]:clone()
       local sigma = window:sum(2)
-      print ("sigma:size()", sigma:size())
-      print ("window:size()", window:size())
+      -- print ("sigma:size()", sigma:size())
+      -- print ("window:size()", window:size())
 
 
       for batch_idx=1,in_size[1] do
