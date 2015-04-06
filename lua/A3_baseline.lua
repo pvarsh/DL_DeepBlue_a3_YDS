@@ -150,7 +150,8 @@ function main(opt)
    
     -- if you decide to just adapt the baseline code for part 2, you'll probably want to make this linear and remove pooling
     -- model:add(nn.TemporalConvolution(1, 20, 10, 1))
-    model:add(nn.Linear(opt.inputDim, 20*(opt.inputDim-11)))
+    model:add(nn.Reshape(opt.minibatchSize*opt.inputDim, true))
+    model:add(nn.Linear(opt.minibatchSize*opt.inputDim, 20*(opt.inputDim-11)))
     
     -- if opt.pooling == 'max' then
     --     model:add(nn.TemporalMaxPooling(3, 1))
