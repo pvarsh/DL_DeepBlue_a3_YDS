@@ -31,7 +31,6 @@ end
 function TemporalLogExpPooling:updateOutput(input)
 
    --------- OUR CODE
-   
    local input_size = input:size()
    local output_size = torch.LongStorage(3)
 
@@ -39,28 +38,21 @@ function TemporalLogExpPooling:updateOutput(input)
    output_size[2] = math.floor((input_size[2] + 1 - self.kW)/self.dW)
    output_size[3] = input_size[3]
 
-   self.output = torch.DoubleTensor(output_size)
-   -- print('self.output:size()')
-   -- print(self.output)
-   local exp_beta_x = torch.DoubleTensor(input_size)
+   -- Check if self.output exists (nonzero dimension)
+   -- if self.output:dim() == 0 then 
+   --   self.output = torch.Tensor(output_size)
+   -- end
+   self.output = torch.Tensor(output_size)
 
-   exp_beta_x:mul(input, self.beta) -- multiplication and exponentiation
-   exp_beta_x:exp()                 -- only is done once
-   
-   for batch_idx = 1,input_size[1] do
-      for frame_idx = 1,input_size[3] do
-         for step_idx = 1,output_size[2] do
-            local window_start = (step_idx - 1)*self.dW + 1
-            local window_end   = window_start + self.kW - 1
-            local window_out = input[{ batch_idx, {window_start, window_end}, frame_idx }]:sum()
-            window_out = window_out / self.kW
-            window_out = torch.log(window_out)
-            window_out = window_out / self.beta
-           
-            self.output[{ batch_idx, step_idx, frame_idx }] = window_out
-         end -- end: feature vector loop
-      end -- end: frame loop
-   end -- end: minibatch loop
+   local exp_beta_x = input:clone()
+   exp_beta_x:mul(self.beta):exp()
+   for step_idx=1,output_size[2] do
+      local win_start = (step_idx - 1)*self.dW + 1
+      local win_end   = win_start + self.kW - 1
+      local sigma = exp_beta_x[{ {},{win_start,win_end},{} }]:sum(2)
+      self.output[{ {},step_idx,{} }] = sigma:div(self.kW):log():div(self.beta)
+   end
+
    --------- END: OUR CODE
 
    return self.output
@@ -72,22 +64,33 @@ function TemporalLogExpPooling:updateGradInput(input, gradOutput)
    local in_size = input:size()
    local out_size = gradOutput:size()
 
-   self.gradInput = torch.zeros(in_size)
-   local exp_beta_x = input:clone():mul(self.beta):exp()
-
-   for batch_idx=1,out_size[1] do
-      for frame_idx=1,out_size[3] do
-         for step_idx=1,out_size[2] do
-            local gradInput_win_start = (step_idx - 1)*self.dW + 1
-            local gradInput_win_end   = gradInput_win_start + self.kW - 1
-            local denom_sum = exp_beta_x[{ batch_idx, {gradInput_win_start, gradInput_win_end}, frame_idx }]:sum()
-
-            local dOut_dIn = exp_beta_x[{batch_idx, {gradInput_win_start, gradInput_win_end}, frame_idx}]:clone():div(denom_sum)
-            self.gradInput[{ batch_idx, {gradInput_win_start, gradInput_win_end}, frame_idx }]:add(dOut_dIn:mul(gradOutput[{batch_idx, step_idx, frame_idx}]))
-         end
-      end
+   if self.gradInput:dim() == 0 then
+      self.gradInput = torch.zeros(in_size)
+   else
+      self.gradInput:zero() -- Should this be done manually outside of updateGradInput?
    end
 
+   local exp_beta_x = input:clone():mul(self.beta):exp()
+
+   for step_idx=1,out_size[2] do
+      local win_start = (step_idx - 1)*self.dW + 1
+      local win_end = win_start + self.kW - 1
+      local window = exp_beta_x[{ {}, {win_start,win_end}, {} }]:clone()
+      local sigma = window:sum(2)
+      -- print ("sigma:size()", sigma:size())
+      -- print ("window:size()", window:size())
+
+
+      for batch_idx=1,in_size[1] do
+         for frame_idx=1,in_size[3] do
+            window[{ {batch_idx},{},{frame_idx} }]:div(sigma[{ batch_idx,1,frame_idx }]):mul(gradOutput[{ batch_idx,step_idx,frame_idx }])
+         end
+      end
+
+      -- print ("sigma:size()", sigma:size())
+      -- window:cdiv(sigma):cmul(self.gradOutput[{ {},{step_idx},{} }])
+      self.gradInput[{ {},{win_start,win_end},{} }]:add(window)
+   end
    --------- END: OUR CODE
    return self.gradInput
 end

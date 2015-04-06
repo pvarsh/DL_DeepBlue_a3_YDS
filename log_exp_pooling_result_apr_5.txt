@@ -1,0 +1,59 @@
+git commit: aaa7bacb0452627b345e2de916ebd40093dd251b
+
+[pv629@compute-16-12 lua]$ th A3_baseline.lua
+Loading word vectors...	
+Loading raw data...	
+Computing document input representations...	
+Training...	
+epoch 	1	 error: 	0.68558	
+epoch 	2	 error: 	0.67142	
+epoch 	3	 error: 	0.67866	
+epoch 	4	 error: 	0.63876	
+epoch 	5	 error: 	0.61888	
+epoch 	6	 error: 	0.61542	
+epoch 	7	 error: 	0.62914	
+epoch 	8	 error: 	0.61062	
+epoch 	9	 error: 	0.6075	
+epoch 	10	 error: 	0.61484	
+epoch 	11	 error: 	0.59024	
+epoch 	12	 error: 	0.59948	
+epoch 	13	 error: 	0.60944	
+epoch 	14	 error: 	0.58952	
+epoch 	15	 error: 	0.5895	
+epoch 	16	 error: 	0.58654	
+epoch 	17	 error: 	0.5909	
+epoch 	18	 error: 	0.5874	
+epoch 	19	 error: 	0.60652	
+epoch 	20	 error: 	0.58874	
+epoch 	21	 error: 	0.5918	
+epoch 	22	 error: 	0.58938	
+epoch 	23	 error: 	0.57872	
+epoch 	24	 error: 	0.5912	
+epoch 	25	 error: 	0.58602	
+epoch 	26	 error: 	0.57874	
+epoch 	27	 error: 	0.58222	
+epoch 	28	 error: 	0.58246	
+epoch 	29	 error: 	0.58032	
+epoch 	30	 error: 	0.5785	
+epoch 	31	 error: 	0.57484	
+epoch 	32	 error: 	0.57376	
+epoch 	33	 error: 	0.58156	
+epoch 	34	 error: 	0.5793	
+epoch 	35	 error: 	0.57904	
+epoch 	36	 error: 	0.57462	
+epoch 	37	 error: 	0.58314	
+epoch 	38	 error: 	0.58272	
+epoch 	39	 error: 	0.57466	
+epoch 	40	 error: 	0.57784	
+epoch 	41	 error: 	0.57332	
+epoch 	42	 error: 	0.57046	
+epoch 	43	 error: 	0.57266	
+epoch 	44	 error: 	0.57228	
+epoch 	45	 error: 	0.57458	
+epoch 	46	 error: 	0.5739	
+epoch 	47	 error: 	0.56898	
+epoch 	48	 error: 	0.57196	
+epoch 	49	 error: 	0.5741	
+epoch 	50	 error: 	0.5779	
+0.5779	
+
