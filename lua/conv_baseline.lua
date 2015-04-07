@@ -1,3 +1,8 @@
+-------------------------------------------------
+-- Baseline code with minor modifications to test
+-- temporalLogExpPooling.
+-------------------------------------------------
+
 require 'torch'
 require 'nn'
 require 'optim'

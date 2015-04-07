@@ -1,3 +1,8 @@
+-------------------------------------------------
+-- A linear neural net baseline without convolutions
+-- or pooling layers.
+-------------------------------------------------
+
 require 'torch'
 require 'nn'
 require 'optim'

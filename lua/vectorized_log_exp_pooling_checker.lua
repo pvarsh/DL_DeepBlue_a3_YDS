@@ -1,5 +1,10 @@
+-------------------------------------------------
+-- Runs a sample input forward and backward
+-- through nn.TemporalLogExpPooling
+-------------------------------------------------
+
 require 'nn'
-require 'A3_skeleton-vectorized'
+require 'temporalLogExpPooling'
 
 torch.manualSeed(123)
 x = torch.rand(4,8,2)
