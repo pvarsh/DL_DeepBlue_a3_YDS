@@ -84,8 +84,8 @@ function train_model(model, criterion, data, labels, test_data, test_labels, opt
     
     -- optimization functional to train the model with torch's optim library
     local function feval(x) 
-        local minibatch = data:sub(opt.idx, opt.idx + opt.minibatchSize, 1, data:size(2)):clone()
-        local minibatch_labels = labels:sub(opt.idx, opt.idx + opt.minibatchSize):clone()
+        local minibatch = data:sub(opt.idx, opt.idx + opt.minibatchSize - 1, 1, data:size(2)):clone()
+        local minibatch_labels = labels:sub(opt.idx, opt.idx + opt.minibatchSize - 1):clone()
         
         model:training()
         local minibatch_loss = criterion:forward(model:forward(minibatch), minibatch_labels)
