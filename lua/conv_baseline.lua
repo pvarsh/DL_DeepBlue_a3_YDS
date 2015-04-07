@@ -1,7 +1,7 @@
 require 'torch'
 require 'nn'
 require 'optim'
-require 'A3_skeleton-vectorized.lua'
+require 'temporalLogExpPooling.lua'
 
 ffi = require('ffi')
 
@@ -158,6 +158,7 @@ function main(opt)
         error("opt.pooling must be 'max' or 'logexp'")
     end
     
+    -- subtracting 11 may break the code if step or window size is changed
     model:add(nn.Reshape(20*(opt.inputDim-11), true))
     model:add(nn.Linear(20*(opt.inputDim-11), 5))
     model:add(nn.LogSoftMax())
