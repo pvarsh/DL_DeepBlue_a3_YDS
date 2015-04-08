@@ -161,6 +161,8 @@ function main(opt)
 
     -- Build model
     if opt.model == 'linear_baseline' then
+        opt.minibatchSize = 1
+        print("Warning: Resetting minibatchSize = 1. linear_baseline model breaks for larger minibatches.")
         model, criterion = linear_baseline(opt)
     elseif opt.model == 'conv_baseline' then
         model, criterion = conv_baseline(opt)
