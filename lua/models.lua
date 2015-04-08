@@ -13,6 +13,26 @@ function linear_baseline(opt)
     return model, criterion
 end
 
+function linear_two_hidden(opt)    
+    model = nn.Sequential()
+   
+    model:add(nn.Reshape(opt.minibatchSize*opt.inputDim))
+
+    model:add(nn.Linear(opt.minibatchSize*opt.inputDim, opt.minibatchSize*opt.inputDim*2))
+    model:add(nn.ReLU())
+
+    model:add(nn.Linear(opt.minibatchSize*opt.inputDim*2), opt.minibatchSize*opt.inputDim*2))
+    model:add(nn.ReLU())
+
+    -- model:add(nn.Dropout(0.5))
+    model:add(nn.Linear(opt.minibatchSize*opt.inputDim*2, 5))
+    model:add(nn.LogSoftMax())
+
+    criterion = nn.ClassNLLCriterion()
+
+    return model, criterion
+end
+
 function conv_baseline(opt)
     model = nn.Sequential()
     model:add(nn.TemporalConvolution(1, 20, 10, 1))

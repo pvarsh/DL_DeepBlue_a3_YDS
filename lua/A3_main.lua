@@ -163,7 +163,11 @@ function main(opt)
     -- Build model
     if opt.model == 'linear_baseline' then
         opt.minibatchSize = 1
-        print("Warning: Resetting minibatchSize = 1. linear_baseline model breaks for larger minibatches.")
+        print("WARNING: Resetting minibatchSize = 1. linear_baseline model breaks for larger minibatches.")
+        model, criterion = linear_baseline(opt)
+    elseif opt.model == 'linear_two_hidden' then
+        opt.minibatchSize = 1
+        print("WARNING: Resetting minibatchSize = 1. linear_baseline model breaks for larger minibatches.")
         model, criterion = linear_baseline(opt)
     elseif opt.model == 'conv_baseline' then
         model, criterion = conv_baseline(opt)
@@ -199,7 +203,7 @@ if not opt then
    cmd:option('-learningRate', 0.1, 'learning rate')
    cmd:option('-learningRateDecay', 0.001, 'learning rate decay')
    cmd:option('-momentum', 0.1, 'SGD momentum')
-   cmd:option('-model', 'linear_baseline', 'model function to be used')
+   cmd:option('-model', 'linear_baseline', 'model function to be used [linear_baseline | linear_two_hidden | conv_baseline])
    cmd:text()
    opt = cmd:parse(arg or {})
    opt.glovePath = opt.glovePath .. 'glove.6B.' .. opt.inputDim .. 'd.txt'
