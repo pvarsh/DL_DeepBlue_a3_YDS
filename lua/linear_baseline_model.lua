@@ -14,3 +14,4 @@ function linear_baseline_model(opt)
     criterion = nn.ClassNLLCriterion()
 
     return model, criterion
+end

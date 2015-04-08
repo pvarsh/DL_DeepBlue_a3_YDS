@@ -6,6 +6,7 @@
 require 'torch'
 require 'nn'
 require 'optim'
+require 'linear_baseline_model'
 
 ffi = require('ffi')
 
