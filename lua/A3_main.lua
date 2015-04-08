@@ -116,6 +116,8 @@ function train_model(model, criterion, data, labels, test_data, test_labels, opt
 
         local accuracy = test_model(model, test_data, test_labels, opt)
         print("epoch ", epoch, " error: ", accuracy)
+        print("Saving model to " .. opt.modelFileName)
+        torch.save(opt.modelFileName, model)
 
     end
 end
@@ -208,6 +210,7 @@ if not opt then
    cmd:option('-momentum', 0.1, 'SGD momentum')
    cmd:option('-model', 'linear_baseline', 'model function to be used [linear_baseline | linear_two_hidden | conv_baseline]')
    cmd:option('-seed', 0, 'manual seed for initial data permutation')
+   cmd:option('-modelFileName' , 'model.net', 'filename to save model')
    cmd:text()
    opt = cmd:parse(arg or {})
    opt.glovePath = opt.glovePath .. 'glove.6B.' .. opt.inputDim .. 'd.txt'
