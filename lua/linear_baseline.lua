@@ -143,12 +143,22 @@ function main(opt)
     local processed_data, labels = preprocess_data(raw_data, glove_table, opt)
     
     -- split data into makeshift training and validation sets
-    local training_data = processed_data:sub(1, opt.nClasses*opt.nTrainDocs, 1, processed_data:size(2)):clone()
+    local training_data = processed_data:sub(1, 
+                                             opt.nClasses*opt.nTrainDocs,
+                                             1, 
+                                             processed_data:size(2)):clone()
     local training_labels = labels:sub(1, opt.nClasses*opt.nTrainDocs):clone()
     
     -- make your own choices - here I have not created a separate test set
-    local test_data = training_data:clone() 
-    local test_labels = training_labels:clone()
+    local test_data = processed_data:sub(opt.nClasses*opt.nTrainDocs + 1,
+                                         opt.nClasses*opt.nTrainDocs + opt.nClasses*opt.nTestDocs,
+                                         1,
+                                         processed_data:size(2)):clone()
+    local test_labels = labels:sub(opt.nClasses*opt.nTrainDocs + 1,
+                                         opt.nClasses*opt.nTrainDocs + opt.nClasses*opt.nTestDocs):clone()
+
+    -- local test_data = training_data:clone() 
+    -- local test_labels = training_labels:clone()
 
     -- construct model:
     model = nn.Sequential()
