@@ -2,6 +2,21 @@
 - date: 2015/04/08
 - **testing on testing data**
 - commit: a94d973d44cf9378c9bbb6bae41b999d5b68aebf
+- call: th A3_main.lua -model linear_baseline -nEpochs 30 -nTrainDocs 100000 -nTestDocs 10000 -minibatchSize 1 -inputDim 300
+- Num training docs: 100,000 * 5
+- Num test docs: 10,000 * 5
+- Word vector dimension: 300
+
+###### Training:
+Training... 
+epoch   1    error:     0.5071  
+epoch   2    error:     0.49906 
+epoch   3    error:     0.49764 
+
+### Linear model (linear_baseline)
+- date: 2015/04/08
+- **testing on testing data**
+- commit: a94d973d44cf9378c9bbb6bae41b999d5b68aebf
 - call: th A3_main.lua -model linear_baseline -nEpochs 30 -nTestDocs 10000 -nTrainDocs 50000 -minibatchSize 1
 - Num training docs: 50000 * nClasses
 - Num test docs: 10000 * nClasses
