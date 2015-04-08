@@ -6,7 +6,7 @@
 require 'torch'
 require 'nn'
 require 'optim'
-require 'linear_baseline_model'
+require 'models'
 
 ffi = require('ffi')
 
@@ -158,24 +158,13 @@ function main(opt)
     local test_labels = labels:sub(opt.nClasses*opt.nTrainDocs + 1,
                                          opt.nClasses*opt.nTrainDocs + opt.nClasses*opt.nTestDocs):clone()
 
-    -- local test_data = training_data:clone() 
-    -- local test_labels = training_labels:clone()
 
-    -- -- construct model:
-    -- model = nn.Sequential()
-   
-    -- -- if you decide to just adapt the baseline code for part 2, you'll probably want to make this linear and remove pooling
-    -- -- model:add(nn.TemporalConvolution(1, 20, 10, 1))
-    -- model:add(nn.Reshape(opt.minibatchSize*opt.inputDim))
-    -- model:add(nn.Linear(opt.minibatchSize*opt.inputDim, opt.minibatchSize*opt.inputDim*2))
-    -- model:add(nn.ReLU())
-    -- model:add(nn.Dropout(0.5)) 
-    -- model:add(nn.Linear(opt.minibatchSize*opt.inputDim*2, 5))
-    -- model:add(nn.LogSoftMax())
-
-    -- criterion = nn.ClassNLLCriterion()
-
-    model, criterion = linear_baseline_model(opt)
+    -- Build model
+    if opt.model == 'linear_baseline' then
+        model, criterion = linear_baseline(opt)
+    elseif opt.model == 'conv_baseline' then
+        model, criterion = conv_baseline(opt)
+    end
 
     print(model) 
     print("Training...")
@@ -207,6 +196,7 @@ if not opt then
    cmd:option('-learningRate', 0.1, 'learning rate')
    cmd:option('-learningRateDecay', 0.001, 'learning rate decay')
    cmd:option('-momentum', 0.1, 'SGD momentum')
+   cmd:option('-model', 'linear_baseline', 'model function to be used')
    cmd:text()
    opt = cmd:parse(arg or {})
    opt.glovePath = opt.glovePath .. 'glove.6B.' .. opt.inputDim .. 'd.txt'
