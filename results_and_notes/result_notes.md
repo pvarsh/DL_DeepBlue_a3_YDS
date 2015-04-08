@@ -1,5 +1,6 @@
 ### Linear model with ReLU
 - date: 2015/04/06
+- **testing on training data**
 - commit: b716d8f76d9a89352b6f7fe69b187a8094511c50
 - call: th A3_baseline.lua -nEpochs 50 -minibatchSize 1 -learningRate 0.2
 - results: gets stuck near 56.6% error
@@ -27,6 +28,7 @@
 
 ### Linear model with ReLU
 - date: 2015/04/06
+- **testing on training data**
 - commit: b716d8f76d9a89352b6f7fe69b187a8094511c50
 - call: th A3_baseline.lua -nEpochs 50 -minibatchSize 1 -learningRate 0.1
 - results: gets stuck near 56.6% error
@@ -68,6 +70,7 @@
 
 ### Linear model with ReLU and dropout
 - date: 2015/04/06
+- **testing on training data**
 - commit: 8be9e28ca09fc67c99e7462f5311eb62681946f5
 - call: th A3_baseline.lua -nEpochs 50 -minibatchSize 1 -learningRate 0.1
 
@@ -97,6 +100,7 @@
 ### Linear model with ReLU, dropout, hidden_size = input_size * 2
 - Note: this hidden layer is smaller than previous runs above
 - date: 2015/04/06
+- **testing on training data**
 - commit: f69b290c8f5b56195f7f3dc7079fa180e657bcd8
 - call: th A3_baseline.lua -nEpochs 50 -minibatchSize 1 -learningRate 0.1
 
