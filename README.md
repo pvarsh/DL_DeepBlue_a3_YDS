@@ -10,6 +10,7 @@ Yelp Dataset Challenge
 ###### Features TODO:
 - Fix or exmplain why minibatch size greater than 1 breaks `linear_model()`
 - Add confusion matrix
+- Add/clarify training / test error messages in output
 - Enable CUDA
 - Automatically output log entries in `result_notes.md` log format
 - Set seed for permutation and training/test set generation
