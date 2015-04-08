@@ -12,7 +12,7 @@ Yelp Dataset Challenge
   on the training/validation, and then run best models on test. Write test data
   and training/validation data to separate files.
 - Write code to save trained models to file.
-- Fix or exmplain why minibatch size greater than 1 breaks `linear_model()`
+- Fix or explain why minibatch size greater than 1 breaks `linear_model()`
 - Add confusion matrix
 - Add/clarify training / test error messages in output
 - Enable CUDA
