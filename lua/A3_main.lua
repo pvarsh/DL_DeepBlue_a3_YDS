@@ -56,6 +56,10 @@ function preprocess_data(raw_data, wordvector_table, opt)
     local labels = torch.zeros(opt.nClasses*(opt.nTrainDocs + opt.nTestDocs))
     
     -- use torch.randperm to shuffle the data, since it's ordered by class in the file
+    if opt.seed ~= 0 then
+        torch.manualSeed(opt.seed)
+    end
+
     local order = torch.randperm(opt.nClasses*(opt.nTrainDocs+opt.nTestDocs))
     
     for i=1,opt.nClasses do
@@ -108,7 +112,6 @@ function train_model(model, criterion, data, labels, test_data, test_labels, opt
         for batch=1,opt.nBatches do
             opt.idx = (order[batch] - 1) * opt.minibatchSize + 1
             optim.sgd(feval, parameters, opt)
-            --print("epoch: ", epoch, " batch: ", batch)
         end
 
         local accuracy = test_model(model, test_data, test_labels, opt)
@@ -196,14 +199,15 @@ if not opt then
    cmd:option('-glovePath', '/scratch/courses/DSGA1008/A3/glove/', 'path to GloVe files')
    cmd:option('-dataPath', '/scratch/courses/DSGA1008/A3/data/train.t7b', 'path to data')
    cmd:option('-nTrainDocs', 10000, 'number of training documents in each class')
-   cmd:option('-nTestDocs', 0, 'number of test documents in each class')
+   cmd:option('-nTestDocs', 1000, 'number of test documents in each class')
    cmd:option('-nClasses', 5, 'number of classes')
    cmd:option('-nEpochs', 50, 'number of training epochs')
    cmd:option('-minibatchSize', 128, 'minibatch size')
    cmd:option('-learningRate', 0.1, 'learning rate')
    cmd:option('-learningRateDecay', 0.001, 'learning rate decay')
    cmd:option('-momentum', 0.1, 'SGD momentum')
-   cmd:option('-model', 'linear_baseline', 'model function to be used [linear_baseline | linear_two_hidden | conv_baseline])
+   cmd:option('-model', 'linear_baseline', 'model function to be used [linear_baseline | linear_two_hidden | conv_baseline]')
+   cmd:option('-seed', 0, 'manual seed for initial data permutation')
    cmd:text()
    opt = cmd:parse(arg or {})
    opt.glovePath = opt.glovePath .. 'glove.6B.' .. opt.inputDim .. 'd.txt'
