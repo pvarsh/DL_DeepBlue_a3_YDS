@@ -160,19 +160,22 @@ function main(opt)
     -- local test_data = training_data:clone() 
     -- local test_labels = training_labels:clone()
 
-    -- construct model:
-    model = nn.Sequential()
+    -- -- construct model:
+    -- model = nn.Sequential()
    
-    -- if you decide to just adapt the baseline code for part 2, you'll probably want to make this linear and remove pooling
-    -- model:add(nn.TemporalConvolution(1, 20, 10, 1))
-    model:add(nn.Reshape(opt.minibatchSize*opt.inputDim))
-    model:add(nn.Linear(opt.minibatchSize*opt.inputDim, opt.minibatchSize*opt.inputDim*2))
-    model:add(nn.ReLU())
-    model:add(nn.Dropout(0.5)) 
-    model:add(nn.Linear(opt.minibatchSize*opt.inputDim*2, 5))
-    model:add(nn.LogSoftMax())
+    -- -- if you decide to just adapt the baseline code for part 2, you'll probably want to make this linear and remove pooling
+    -- -- model:add(nn.TemporalConvolution(1, 20, 10, 1))
+    -- model:add(nn.Reshape(opt.minibatchSize*opt.inputDim))
+    -- model:add(nn.Linear(opt.minibatchSize*opt.inputDim, opt.minibatchSize*opt.inputDim*2))
+    -- model:add(nn.ReLU())
+    -- model:add(nn.Dropout(0.5)) 
+    -- model:add(nn.Linear(opt.minibatchSize*opt.inputDim*2, 5))
+    -- model:add(nn.LogSoftMax())
 
-    criterion = nn.ClassNLLCriterion()
+    -- criterion = nn.ClassNLLCriterion()
+
+    model, criterion = linear_baseline_model(opt)
+
     print(model) 
     print("Training...")
     train_model(model, criterion, training_data, training_labels, test_data, test_labels, opt)
