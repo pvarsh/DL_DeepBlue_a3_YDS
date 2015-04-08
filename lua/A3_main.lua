@@ -116,7 +116,7 @@ function train_model(model, criterion, data, labels, test_data, test_labels, opt
 
         local accuracy = test_model(model, test_data, test_labels, opt)
         print("epoch ", epoch, " error: ", accuracy)
-        print("Saving model to " .. opt.modelFileName)
+        print("Saving model to " .. opt.modelFileName .. "WARNING: This overwrites the file".)
         torch.save(opt.modelFileName, model)
 
     end
