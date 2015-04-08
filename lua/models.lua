@@ -25,7 +25,8 @@ function conv_baseline(opt)
         error("opt.pooling must be 'max' or 'logexp'")
     end
     
-    -- subtracting 11 may break the code if step or window size is changed
+    -- subtracting 11 may break the code if
+    -- step or window size (opt.kW, opt.dW) are changed
     model:add(nn.Reshape(20*(opt.inputDim-11), true))
     model:add(nn.Linear(20*(opt.inputDim-11), 5))
     model:add(nn.LogSoftMax())
