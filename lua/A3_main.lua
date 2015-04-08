@@ -7,6 +7,7 @@ require 'torch'
 require 'nn'
 require 'optim'
 require 'models'
+require 'pooling'
 
 ffi = require('ffi')
 
