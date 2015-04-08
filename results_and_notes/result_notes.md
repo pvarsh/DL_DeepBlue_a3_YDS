@@ -1,3 +1,45 @@
+### Linear model (linear_baseline)
+- date: 2015/04/08
+- **testing on testing data**
+- commit: a94d973d44cf9378c9bbb6bae41b999d5b68aebf
+- call: th A3_main.lua -model linear_baseline -nEpochs 30 -nTestDocs 10000 -nTrainDocs 50000 -minibatchSize 1
+- Num training docs: 50000 * nClasses
+- Num test docs: 10000 * nClasses
+- Word vector dimension: 50
+
+###### Training...
+epoch   1    error:     0.58884 
+epoch   2    error:     0.5834  
+epoch   3    error:     0.5753  
+epoch   4    error:     0.57352 
+epoch   5    error:     0.5729  
+epoch   6    error:     0.5723  
+epoch   7    error:     0.57496 
+epoch   8    error:     0.57084 
+epoch   9    error:     0.57064 
+epoch   10   error:     0.56956 
+epoch   11   error:     0.57078 
+epoch   12   error:     0.56976 
+epoch   13   error:     0.57096 
+epoch   14   error:     0.57046 
+epoch   15   error:     0.56906 
+epoch   16   error:     0.57004 
+epoch   17   error:     0.56924 
+epoch   18   error:     0.56874 
+epoch   19   error:     0.56996 
+epoch   20   error:     0.5682  
+epoch   21   error:     0.5683  
+epoch   22   error:     0.56816 
+epoch   23   error:     0.56924 
+epoch   24   error:     0.56862 
+epoch   25   error:     0.56736 
+epoch   26   error:     0.5676  
+epoch   27   error:     0.56864 
+epoch   28   error:     0.56766 
+epoch   29   error:     0.56722 
+epoch   30   error:     0.56686 
+
+
 ### Linear model with ReLU
 - date: 2015/04/06
 - **testing on training data**
