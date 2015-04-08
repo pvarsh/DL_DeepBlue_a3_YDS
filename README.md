@@ -8,12 +8,16 @@ Yelp Dataset Challenge
 - Dev in branches if your work might temporarily break the code.
 
 ###### Features TODO:
+- Split data into training/validation and test sets to do all the model comparisons
+  on the training/validation, and then run best models on test. Write test data
+  and training/validation data to separate files.
+- Write code to save trained models to file.
 - Fix or exmplain why minibatch size greater than 1 breaks `linear_model()`
 - Add confusion matrix
 - Add/clarify training / test error messages in output
 - Enable CUDA
 - Automatically output log entries in `result_notes.md` log format
-- Set seed for permutation and training/test set generation
+- Done (PV): Set seed for permutation and training/test set generation
 
 
 ###### Models TODO:
