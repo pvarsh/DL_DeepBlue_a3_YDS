@@ -11,7 +11,7 @@ Yelp Dataset Challenge
 - Split data into training/validation and test sets to do all the model comparisons
   on the training/validation, and then run best models on test. Write test data
   and training/validation data to separate files.
-- Write code to save trained models to file.
+- Done (PV): Write code to save trained models to file.
 - Fix or explain why minibatch size greater than 1 breaks `linear_model()`
 - Add confusion matrix
 - Add/clarify training / test error messages in output
