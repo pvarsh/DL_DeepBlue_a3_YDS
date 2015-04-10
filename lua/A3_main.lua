@@ -195,6 +195,7 @@ if not opt then
    cmd:option('-inputDim', 50, 'word vector dimension: [50 | 100 | 200 | 300]')
    cmd:option('-glovePath', '/scratch/courses/DSGA1008/A3/glove/', 'path to GloVe files')
    cmd:option('-dataPath', '/scratch/courses/DSGA1008/A3/data/train.t7b', 'path to data')
+   cmd:option('-idfPath', '../tfidf/idf.csv', 'path to idf csv file')
    cmd:option('-nTrainDocs', 10000, 'number of training documents in each class')
    cmd:option('-nTestDocs', 0, 'number of test documents in each class')
    cmd:option('-nClasses', 5, 'number of classes')
@@ -203,7 +204,9 @@ if not opt then
    cmd:option('-learningRate', 0.1, 'learning rate')
    cmd:option('-learningRateDecay', 0.001, 'learning rate decay')
    cmd:option('-momentum', 0.1, 'SGD momentum')
-   cmd:option('-model', 'linear_baseline', 'model function to be used [linear_baseline | linear_two_hidden | conv_baseline])
+   cmd:option('-model', 'linear_baseline', 'model function to be used [linear_baseline | linear_two_hidden | conv_baseline]')
+   cmd:option('-wordWeight', 'none', 'word vector weights ["none" | "tfidf"]')
+
    cmd:text()
    opt = cmd:parse(arg or {})
    opt.glovePath = opt.glovePath .. 'glove.6B.' .. opt.inputDim .. 'd.txt'
