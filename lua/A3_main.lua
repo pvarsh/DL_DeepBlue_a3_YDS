@@ -44,6 +44,32 @@ function load_glove(path, inputDim)
     return glove_table
 end
 
+function load_idf(path)
+    local idf_file = io.open(path)
+    local idf_table = {}
+
+    local line = idf_file:read("*l")
+    local break_count = 0
+    while line do
+        local i = 1
+        local word = ""
+        for entry in line:gmatch("[^,]+") do
+            if i == 1 then 
+                word = entry
+            end
+            if i == 2 then
+                idf_table[word] = entry
+            end
+            i = i + 1
+        end -- end: for
+
+        break_count = break_count + 1
+        line = idf_file:read("*l")
+    end -- end: do
+    return idf_table
+end
+
+
 --- Here we simply encode each document as a fixed-length vector 
 -- by computing the unweighted average of its word vectors.
 -- A slightly better approach would be to weight each word by its tf-idf value
@@ -135,11 +161,18 @@ function main(opt)
 
     opt.idx = 1
 
+    if opt.wordWeight == 'tfidf' then
+        print("Loading inverse document frequency table...")
+        opt.idf_table = load_idf(opt.idfPath)
+    end
+
     print("Loading word vectors...")
     local glove_table = load_glove(opt.glovePath, opt.inputDim)
     
     print("Loading raw data...")
     local raw_data = torch.load(opt.dataPath)
+
+
     
     print("Computing document input representations...")
     local processed_data, labels = preprocess_data(raw_data, glove_table, opt)
@@ -195,7 +228,7 @@ if not opt then
    cmd:option('-inputDim', 50, 'word vector dimension: [50 | 100 | 200 | 300]')
    cmd:option('-glovePath', '/scratch/courses/DSGA1008/A3/glove/', 'path to GloVe files')
    cmd:option('-dataPath', '/scratch/courses/DSGA1008/A3/data/train.t7b', 'path to data')
-   cmd:option('-idfPath', '../tfidf/idf.csv', 'path to idf csv file')
+   cmd:option('-idfPath', '../idf/idf.csv', 'path to idf.csv file')
    cmd:option('-nTrainDocs', 10000, 'number of training documents in each class')
    cmd:option('-nTestDocs', 0, 'number of test documents in each class')
    cmd:option('-nClasses', 5, 'number of classes')
