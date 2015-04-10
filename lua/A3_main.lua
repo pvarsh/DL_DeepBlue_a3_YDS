@@ -230,7 +230,7 @@ if not opt then
    cmd:option('-dataPath', '/scratch/courses/DSGA1008/A3/data/train.t7b', 'path to data')
    cmd:option('-idfPath', '../idf/idf.csv', 'path to idf.csv file')
    cmd:option('-nTrainDocs', 10000, 'number of training documents in each class')
-   cmd:option('-nTestDocs', 0, 'number of test documents in each class')
+   cmd:option('-nTestDocs', 1000, 'number of test documents in each class')
    cmd:option('-nClasses', 5, 'number of classes')
    cmd:option('-nEpochs', 50, 'number of training epochs')
    cmd:option('-minibatchSize', 128, 'minibatch size')
