@@ -91,14 +91,36 @@ function preprocess_data(raw_data, wordvector_table, opt)
             local doc_size = 1
             
             local index = raw_data.index[i][j]
-            -- standardize to all lowercase
             local document = ffi.string(torch.data(raw_data.content:narrow(1, index, 1))):lower()
             
+            if opt.wordWeght == 'tfidf' then
+                local tf_table = {}
+
+                -- compute term frequency (tf)
+                for word in document:gmatch("%S+") do
+                    if tf_table[word] then
+                        tf_table[word] = tf_table[word] + 1
+                    else
+                        tf_table[word] = 1
+                    end
+                end
+
+                for word in document:gmatch("%S+") do
+                    if wordvector_table[word:gsub("%p+", "")] then
+                        doc_size = doc_size + 1
+
+                        local tf_idf = tf_table[word]*opt.idf_table[word]
+                        data[k]:add(wordvector_table[word:gsub("%p+", "")]*tf_idf/10)
+
+                    end
+                end
+            end
+
             -- break each review into words and compute the document average
             for word in document:gmatch("%S+") do
                 if wordvector_table[word:gsub("%p+", "")] then
                     doc_size = doc_size + 1
-                    data[k]:add(wordvector_table[word:gsub("%p+", "")])
+                    data[k]:add(wordvector_table[word:gsub("%p+", "")])                    
                 end
             end
 
