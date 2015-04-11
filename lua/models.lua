@@ -21,7 +21,8 @@ function linear_two_hidden(opt)
     model:add(nn.Linear(opt.minibatchSize*opt.inputDim, opt.minibatchSize*opt.inputDim*2))
     model:add(nn.ReLU())
 
-    model:add(nn.Linear(opt.minibatchSize*opt.inputDim*2), opt.minibatchSize*opt.inputDim*2)
+    model:add(nn.Linear(opt.minibatchSize*opt.inputDim*2, opt.minibatchSize*opt.inputDim*2))
+
     model:add(nn.ReLU())
 
     -- model:add(nn.Dropout(0.5))

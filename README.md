@@ -21,6 +21,9 @@ Yelp Dataset Challenge
 
 
 ###### Models TODO:
-- **PV:** tfidf BOW
+- **PV:** tfidf BOW: DONE
 - concatenated words convolutional
 - **PB:** character-level convolutional
+
+###### Submit script notes:
+- `idf.csv` is pre-computed, will need to be fetched at execution of submit script

@@ -44,6 +44,33 @@ function load_glove(path, inputDim)
     return glove_table
 end
 
+function load_idf(path)
+    print("Loading idf table...")
+    local idf_file = io.open(path)
+    local idf_table = {}
+
+    local line = idf_file:read("*l")
+    local break_count = 0
+    while line do
+        local i = 1
+        local word = ""
+        for entry in line:gmatch("[^,]+") do
+            if i == 1 then 
+                word = entry
+            end
+            if i == 2 then
+                idf_table[word] = entry
+            end
+            i = i + 1
+        end -- end: for
+
+        break_count = break_count + 1
+        line = idf_file:read("*l")
+    end -- end: do
+    return idf_table
+end
+
+
 --- Here we simply encode each document as a fixed-length vector 
 -- by computing the unweighted average of its word vectors.
 -- A slightly better approach would be to weight each word by its tf-idf value
@@ -69,14 +96,38 @@ function preprocess_data(raw_data, wordvector_table, opt)
             local doc_size = 1
             
             local index = raw_data.index[i][j]
-            -- standardize to all lowercase
             local document = ffi.string(torch.data(raw_data.content:narrow(1, index, 1))):lower()
             
+            if opt.wordWeght == 'tfidf' then
+                local tf_table = {}
+
+                -- compute term frequency (tf)
+                print("Computing term frequency...")
+                for word in document:gmatch("%S+") do
+                    if tf_table[word] then
+                        tf_table[word] = tf_table[word] + 1
+                    else
+                        tf_table[word] = 1
+                    end
+                end
+
+                print("Computing tf-idf weighted vector representation")
+                for word in document:gmatch("%S+") do
+                    if wordvector_table[word:gsub("%p+", "")] then
+                        doc_size = doc_size + 1
+
+                        local tf_idf = tf_table[word]*opt.idf_table[word]
+                        data[k]:add(wordvector_table[word:gsub("%p+", "")]*tf_idf/10)
+
+                    end
+                end
+            end
+
             -- break each review into words and compute the document average
             for word in document:gmatch("%S+") do
                 if wordvector_table[word:gsub("%p+", "")] then
                     doc_size = doc_size + 1
-                    data[k]:add(wordvector_table[word:gsub("%p+", "")])
+                    data[k]:add(wordvector_table[word:gsub("%p+", "")])                    
                 end
             end
 
@@ -140,11 +191,18 @@ function main(opt)
 
     opt.idx = 1
 
+    if opt.wordWeight == 'tfidf' then
+        print("Loading inverse document frequency table...")
+        opt.idf_table = load_idf(opt.idfPath)
+    end
+
     print("Loading word vectors...")
     local glove_table = load_glove(opt.glovePath, opt.inputDim)
     
     print("Loading raw data...")
     local raw_data = torch.load(opt.dataPath)
+
+
     
     print("Computing document input representations...")
     local processed_data, labels = preprocess_data(raw_data, glove_table, opt)
@@ -200,6 +258,7 @@ if not opt then
    cmd:option('-inputDim', 50, 'word vector dimension: [50 | 100 | 200 | 300]')
    cmd:option('-glovePath', '/scratch/courses/DSGA1008/A3/glove/', 'path to GloVe files')
    cmd:option('-dataPath', '/scratch/courses/DSGA1008/A3/data/train.t7b', 'path to data')
+   cmd:option('-idfPath', '../idf/idf.csv', 'path to idf.csv file')
    cmd:option('-nTrainDocs', 10000, 'number of training documents in each class')
    cmd:option('-nTestDocs', 1000, 'number of test documents in each class')
    cmd:option('-nClasses', 5, 'number of classes')
@@ -211,6 +270,8 @@ if not opt then
    cmd:option('-model', 'linear_baseline', 'model function to be used [linear_baseline | linear_two_hidden | conv_baseline]')
    cmd:option('-seed', 0, 'manual seed for initial data permutation')
    cmd:option('-modelFileName' , 'model.net', 'filename to save model')
+   cmd:option('-wordWeight', 'none', 'word vector weights ["none" | "tfidf"]')
+
    cmd:text()
    opt = cmd:parse(arg or {})
    opt.glovePath = opt.glovePath .. 'glove.6B.' .. opt.inputDim .. 'd.txt'
