@@ -45,6 +45,7 @@ function load_glove(path, inputDim)
 end
 
 function load_idf(path)
+    print("Loading idf table...")
     local idf_file = io.open(path)
     local idf_table = {}
 
@@ -97,6 +98,7 @@ function preprocess_data(raw_data, wordvector_table, opt)
                 local tf_table = {}
 
                 -- compute term frequency (tf)
+                print("Computing term frequency...")
                 for word in document:gmatch("%S+") do
                     if tf_table[word] then
                         tf_table[word] = tf_table[word] + 1
@@ -105,6 +107,7 @@ function preprocess_data(raw_data, wordvector_table, opt)
                     end
                 end
 
+                print("Computing tf-idf weighted vector representation")
                 for word in document:gmatch("%S+") do
                     if wordvector_table[word:gsub("%p+", "")] then
                         doc_size = doc_size + 1
