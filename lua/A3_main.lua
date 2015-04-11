@@ -111,23 +111,25 @@ function preprocess_data(raw_data, wordvector_table, opt)
                     end
                 end
 
-                print("Computing tf-idf weighted vector representation")
+                print("Computing tf-idf weighted vector representation...")
                 for word in document:gmatch("%S+") do
                     if wordvector_table[word:gsub("%p+", "")] then
                         doc_size = doc_size + 1
-
                         local tf_idf = tf_table[word]*opt.idf_table[word]
-                        data[k]:add(wordvector_table[word:gsub("%p+", "")]*tf_idf/10)
+
+                        -- tf_idf is normalized by idf average: 12.175
+                        data[k]:add(wordvector_table[word:gsub("%p+", "")]*tf_idf/12.175)
 
                     end
                 end
-            end
-
-            -- break each review into words and compute the document average
-            for word in document:gmatch("%S+") do
-                if wordvector_table[word:gsub("%p+", "")] then
-                    doc_size = doc_size + 1
-                    data[k]:add(wordvector_table[word:gsub("%p+", "")])                    
+            else
+                -- print("Computing unweighted vector BOW representation...")
+                -- break each review into words and compute the document average
+                for word in document:gmatch("%S+") do
+                    if wordvector_table[word:gsub("%p+", "")] then
+                        doc_size = doc_size + 1
+                        data[k]:add(wordvector_table[word:gsub("%p+", "")])                    
+                    end
                 end
             end
 
@@ -167,7 +169,7 @@ function train_model(model, criterion, data, labels, test_data, test_labels, opt
 
         local accuracy = test_model(model, test_data, test_labels, opt)
         print("epoch ", epoch, " error: ", accuracy)
-        print("Saving model to " .. opt.modelFileName .. "WARNING: This overwrites the file".)
+        print("Saving model to " .. opt.modelFileName .. "WARNING: This overwrites the file")
         torch.save(opt.modelFileName, model)
 
     end
