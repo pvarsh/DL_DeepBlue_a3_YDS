@@ -1,3 +1,121 @@
+### Linear model (linear_baseline)
+- date: 2015/04/11
+- **testing on testing data**
+- commit: b1b2673cac6bf5032e61cf134753d7c9be41f702
+- call: th A3_main.lua -glovePath "../glove/" -dataPath "../data/train.t7b" -nTrainDocs 100000 -nTestDocs 10000 -learningRate 0.2 -nEpochs 100 -inputDim 300
+- Num training docs: 100,000*5
+- Num test docs: 10,000*5
+- Word vector dimension: 300
+ 
+###### Model
+```
+nn.Sequential {
+  [input -> (1) -> (2) -> (3) -> (4) -> (5) -> (6) -> output]
+  (1): nn.Reshape(300)
+  (2): nn.Linear(300 -> 600)
+  (3): nn.ReLU
+  (4): nn.Dropout
+  (5): nn.Linear(600 -> 5)
+  (6): nn.LogSoftMax
+}
+```
+###### Training...
+```	
+epoch 	1	 error: 	0.79264	
+epoch 	2	 error: 	0.77608	
+epoch 	3	 error: 	0.73432	
+epoch 	4	 error: 	0.66576	
+epoch 	5	 error: 	0.69294	
+epoch 	6	 error: 	0.64816	
+epoch 	7	 error: 	0.63492	
+epoch 	8	 error: 	0.61252	
+epoch 	9	 error: 	0.60316	
+epoch 	10	 error: 	0.59226	
+epoch 	11	 error: 	0.59712	
+epoch 	12	 error: 	0.6023	
+epoch 	13	 error: 	0.58896	
+epoch 	14	 error: 	0.58564	
+epoch 	15	 error: 	0.63176	
+epoch 	16	 error: 	0.62384	
+epoch 	17	 error: 	0.57032	
+epoch 	18	 error: 	0.63344	
+epoch 	19	 error: 	0.56784	
+epoch 	20	 error: 	0.5764	
+epoch 	21	 error: 	0.57502	
+epoch 	22	 error: 	0.57652	
+epoch 	23	 error: 	0.5663	
+epoch 	24	 error: 	0.56662	
+epoch 	25	 error: 	0.56096	
+epoch 	26	 error: 	0.59534	
+epoch 	27	 error: 	0.56944	
+epoch 	28	 error: 	0.5902	
+epoch 	29	 error: 	0.57586	
+epoch 	30	 error: 	0.55732	
+epoch 	31	 error: 	0.55806	
+epoch 	32	 error: 	0.58766	
+epoch 	33	 error: 	0.55404	
+epoch 	34	 error: 	0.56164	
+epoch 	35	 error: 	0.57498	
+epoch 	36	 error: 	0.56972	
+epoch 	37	 error: 	0.56116	
+epoch 	38	 error: 	0.5583	
+epoch 	39	 error: 	0.5667	
+epoch 	40	 error: 	0.57186	
+epoch 	41	 error: 	0.55808	
+epoch 	42	 error: 	0.5651	
+epoch 	43	 error: 	0.55646	
+epoch 	44	 error: 	0.56112	
+epoch 	45	 error: 	0.5776	
+epoch 	46	 error: 	0.57628	
+epoch 	47	 error: 	0.55772	
+epoch 	48	 error: 	0.55566	
+epoch 	49	 error: 	0.55502	
+epoch 	50	 error: 	0.5686	
+epoch 	51	 error: 	0.5631	
+epoch 	52	 error: 	0.55882	
+epoch 	53	 error: 	0.55324	
+epoch 	54	 error: 	0.55838	
+epoch 	55	 error: 	0.55686	
+epoch 	56	 error: 	0.56358	
+epoch 	57	 error: 	0.57166	
+epoch 	58	 error: 	0.55418	
+epoch 	59	 error: 	0.56512	
+epoch 	60	 error: 	0.58278	
+epoch 	61	 error: 	0.5605	
+epoch 	62	 error: 	0.56428	
+epoch 	63	 error: 	0.5514	
+epoch 	64	 error: 	0.55424	
+epoch 	65	 error: 	0.55794	
+epoch 	66	 error: 	0.55116	
+epoch 	67	 error: 	0.55676	
+epoch 	68	 error: 	0.54968	
+epoch 	69	 error: 	0.5585	
+epoch 	70	 error: 	0.56106	
+epoch 	71	 error: 	0.561	
+epoch 	72	 error: 	0.56324	
+epoch 	73	 error: 	0.55878	
+epoch 	74	 error: 	0.56404	
+epoch 	75	 error: 	0.56498	
+epoch 	76	 error: 	0.55452	
+epoch 	77	 error: 	0.56238	
+epoch 	78	 error: 	0.55368	
+epoch 	79	 error: 	0.56028	
+epoch 	80	 error: 	0.56682	
+epoch 	81	 error: 	0.5591	
+epoch 	82	 error: 	0.56308	
+epoch 	83	 error: 	0.55502	
+epoch 	84	 error: 	0.56316	
+epoch 	85	 error: 	0.56138	
+epoch 	86	 error: 	0.55662	
+epoch 	87	 error: 	0.56294	
+epoch 	88	 error: 	0.55204	
+epoch 	89	 error: 	0.55508	
+epoch 	90	 error: 	0.5603	
+epoch 	91	 error: 	0.56338	
+/Users/petervarshavsky/torch/install/bin/luajit: not enough memory
+```
+
+
 ### Linear model (linear_baseline, tfidf)
 - date: 2015/04/10
 - **testing on testing data**
@@ -8,6 +126,7 @@
 - Word vector dimension: 300
 
 ###### Model
+```
 nn.Sequential {
   [input -> (1) -> (2) -> (3) -> (4) -> (5) -> (6) -> output]
   (1): nn.Reshape(300)
@@ -17,9 +136,9 @@ nn.Sequential {
   (5): nn.Linear(600 -> 5)
   (6): nn.LogSoftMax
 }
-
+```
 ###### Training 
-Training...	
+```
 epoch 	1	 error: 	0.79378	
 epoch 	2	 error: 	0.73464	
 epoch 	3	 error: 	0.76192	
@@ -112,6 +231,7 @@ epoch 	89	 error: 	0.56168
 epoch 	90	 error: 	0.56828	
 epoch 	91	 error: 	0.5707	
 /Users/petervarshavsky/torch/install/bin/luajit: not enough memory
+```
 
 
 ### Linear model (linear_baseline)
