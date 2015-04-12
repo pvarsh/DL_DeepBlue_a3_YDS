@@ -13,7 +13,7 @@ alias th=/home/erc399/torch/install/bin/th
 # Make team directory
 cd $HOME
 mkdir DEEP\ BLUE
-cd DEEP_BLUE
+cd DEEP\ BLUE
 
 # Define download URL
 url=http://cims.nyu.edu/~erc399/DL_DeepBlue_a3_YDS/submission/
@@ -29,4 +29,4 @@ wget ${url}DEEP\ BLUE_A3_baseline.lua
 wget ${url}DEEP\ BLUE_model.sh
 
 # Get paper
-wget ${url}DEEP\ BLUE_model.pdf
+# wget ${url}DEEP\ BLUE_model.pdf
