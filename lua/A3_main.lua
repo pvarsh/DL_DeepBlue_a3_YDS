@@ -146,7 +146,7 @@ function train_model(model, criterion, data, labels, test_data, test_labels, opt
     
     -- optimization functional to train the model with torch's optim library
     local function feval(x) 
-        local minibatch = data:sub(opt.idx, opt.idx + opt.minibatchSize - 1, 1, data:size(2)):clone()
+        local minibatch = data:sub(opt.idx, opt.idx + opt.minibatchSize - 1):clone()
         local minibatch_labels = labels:sub(opt.idx, opt.idx + opt.minibatchSize - 1):clone()
         
         model:training()
@@ -168,7 +168,7 @@ function train_model(model, criterion, data, labels, test_data, test_labels, opt
 
         local accuracy = test_model(model, test_data, test_labels, opt)
         print("epoch ", epoch, " error: ", accuracy)
-        print("Saving model to " .. opt.modelFileName .. "WARNING: This overwrites the file".)
+        print("Saving model to " .. opt.modelFileName .. "WARNING: This overwrites the file.")
         torch.save(opt.modelFileName, model)
 
     end
@@ -205,31 +205,38 @@ function main(opt)
 
     
     print("Computing document input representations...")
+    local processed_data
+    local labels
+
     if opt.model == 'conv_concat' then
         print(">> Computing concatenated word vectors representations...")
-        local processed_data, labels = preprocess_data_concat(raw_data, glove_table, opt)
+        processed_data, labels = preprocess_data_concat(raw_data, glove_table, opt)
     else 
         print(">> Computing BOW vector representations...")
-        local processed_data, labels = preprocess_data(raw_data, glove_table, opt)
+        processed_data, labels = preprocess_data(raw_data, glove_table, opt)
     end
 
-    
     -- split data into makeshift training and validation sets
+    -- local training_data = processed_data:sub(1, 
+    --                                          opt.nClasses*opt.nTrainDocs,
+    --                                          1, 
+    --                                          processed_data:size(2)):clone()
     local training_data = processed_data:sub(1, 
-                                             opt.nClasses*opt.nTrainDocs,
-                                             1, 
-                                             processed_data:size(2)):clone()
+                                             opt.nClasses*opt.nTrainDocs
+                                             ):clone()
+
     local training_labels = labels:sub(1, opt.nClasses*opt.nTrainDocs):clone()
     
     -- make your own choices - here I have not created a separate test set
     local test_data = processed_data:sub(opt.nClasses*opt.nTrainDocs + 1,
-                                         opt.nClasses*opt.nTrainDocs + opt.nClasses*opt.nTestDocs,
-                                         1,
-                                         processed_data:size(2)):clone()
+                                         opt.nClasses*opt.nTrainDocs + opt.nClasses*opt.nTestDocs
+                                         ):clone()
     local test_labels = labels:sub(opt.nClasses*opt.nTrainDocs + 1,
                                          opt.nClasses*opt.nTrainDocs + opt.nClasses*opt.nTestDocs):clone()
 
 
+    print("test_data size: ")
+    print(test_data:size())
     -- Build model
     if opt.model == 'linear_baseline' then
         opt.minibatchSize = 1
@@ -241,9 +248,12 @@ function main(opt)
         model, criterion = linear_baseline(opt)
     elseif opt.model == 'conv_baseline' then
         model, criterion = conv_baseline(opt)
+    elseif opt.model == 'conv_concat' then
+        model, criterion = conv_concat(opt)
     end
 
     print(model) 
+
     print("Training...")
     train_model(model, criterion, training_data, training_labels, test_data, test_labels, opt)
     local results = test_model(model, test_data, test_labels)
@@ -278,7 +288,7 @@ if not opt then
    cmd:option('-seed', 0, 'manual seed for initial data permutation')
    cmd:option('-modelFileName' , 'model.net', 'filename to save model')
    cmd:option('-wordWeight', 'none', 'word vector weights ["none" | "tfidf"]')
-   cmd:option('-nWordsConcat', '100', 'number of words to use from each review')
+   cmd:option('-nWordsConcat', 100, 'number of words to use from each review')
 
    cmd:text()
    opt = cmd:parse(arg or {})
