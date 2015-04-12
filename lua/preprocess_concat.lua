@@ -2,9 +2,8 @@ function preprocess_data_concat(raw_data, wordvector_table, opt)
 
     local data = torch.zeros(
                     opt.nClasses*(opt.nTrainDocs+opt.nTestDocs), -- # samples
-                    opt.inputDim, -- dimension of vector representation
-                    opt.nWordsConcat, -- number of words to concatenate
-                    1 -- ? dimension to be used for batching ? 
+                    opt.nWordsConcat, -- dimension to be convoluted over
+                    opt.inputDim -- dimension of vector representation (number of frames/features)
                     )
     local labels = torch.zeros(opt.nClasses*(opt.nTrainDocs + opt.nTestDocs))
     
@@ -31,7 +30,7 @@ function preprocess_data_concat(raw_data, wordvector_table, opt)
             for word in document:gmatch("%S+") do
                 if wordvector_table[word:gsub("%p+", "")] then
                     -- doc_size = doc_size + 1
-                    data[{ {k},{},{word_count},{1} }]:add(wordvector_table[word:gsub("%p+", "")])
+                    data[{ {k},{word_count},{} }]:add(wordvector_table[word:gsub("%p+", "")])
                     word_count = word_count + 1
                     if word_count >= opt.nWordsConcat then
                         break
