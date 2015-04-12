@@ -8,6 +8,7 @@ require 'nn'
 require 'optim'
 require 'models'
 require 'pooling'
+require 'preprocess_concat'
 
 ffi = require('ffi')
 
@@ -202,10 +203,16 @@ function main(opt)
     print("Loading raw data...")
     local raw_data = torch.load(opt.dataPath)
 
-
     
     print("Computing document input representations...")
-    local processed_data, labels = preprocess_data(raw_data, glove_table, opt)
+    if opt.model == 'conv_concat' then
+        print(">> Computing concatenated word vectors representations...")
+        local processed_data, labels = preprocess_data_concat(raw_data, glove_table, opt)
+    else 
+        print(">> Computing BOW vector representations...")
+        local processed_data, labels = preprocess_data(raw_data, glove_table, opt)
+    end
+
     
     -- split data into makeshift training and validation sets
     local training_data = processed_data:sub(1, 
@@ -267,7 +274,7 @@ if not opt then
    cmd:option('-learningRate', 0.1, 'learning rate')
    cmd:option('-learningRateDecay', 0.001, 'learning rate decay')
    cmd:option('-momentum', 0.1, 'SGD momentum')
-   cmd:option('-model', 'linear_baseline', 'model function to be used [linear_baseline | linear_two_hidden | conv_baseline]')
+   cmd:option('-model', 'linear_baseline', 'model function to be used [linear_baseline | linear_two_hidden | conv_baseline | conv_concat]')
    cmd:option('-seed', 0, 'manual seed for initial data permutation')
    cmd:option('-modelFileName' , 'model.net', 'filename to save model')
    cmd:option('-wordWeight', 'none', 'word vector weights ["none" | "tfidf"]')
