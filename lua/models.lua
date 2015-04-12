@@ -56,3 +56,19 @@ function conv_baseline(opt)
 
     return model, criterion
 end
+
+function conv_concat(opt)
+    model = nn.Sequential()
+    model:add(nn.TemporalConvolution(opt.inputDim, opt.inputDim*5, 10, 1))
+    model:add(nn.TemporalMaxPooling(3, 1))
+    
+    -- subtracting 11 may break the code if
+    -- step or window size (opt.kW, opt.dW) are changed
+    model:add(nn.Reshape(opt.inputDim*5*(opt.nWordsConcat-11), true))
+    model:add(nn.Linear(opt.inputDim*5*(opt.nWordsConcat-11), 5))
+    model:add(nn.LogSoftMax())
+
+    criterion = nn.ClassNLLCriterion()
+
+    return model, criterion
+end
