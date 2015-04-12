@@ -57,15 +57,23 @@ function conv_baseline(opt)
     return model, criterion
 end
 
+function pooling_out_calc(N, kW, dW)
+    return math.floor( (N - kW)/dW + 1 )
+end
+
 function conv_concat(opt)
     model = nn.Sequential()
     model:add(nn.TemporalConvolution(opt.inputDim, opt.inputDim*5, 10, 1))
-    model:add(nn.TemporalMaxPooling(3, 1))
+    out_size = pooling_out_calc(opt.nWordsConcat, 10, 1)
+    model:add(nn.ReLU())
+    model:add(nn.TemporalMaxPooling(3, 3))
+    out_size = pooling_out_calc(out_size, 3, 3)
     
     -- subtracting 11 may break the code if
     -- step or window size (opt.kW, opt.dW) are changed
-    model:add(nn.Reshape(opt.inputDim*5*(opt.nWordsConcat-11), true))
-    model:add(nn.Linear(opt.inputDim*5*(opt.nWordsConcat-11), 5))
+    model:add(nn.Reshape(opt.inputDim*5*(out_size), true))
+    model:add(nn.Dropout(0.5))
+    model:add(nn.Linear(opt.inputDim*5*(out_size), 5))
     model:add(nn.LogSoftMax())
 
     criterion = nn.ClassNLLCriterion()
