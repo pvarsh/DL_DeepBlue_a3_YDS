@@ -89,6 +89,8 @@ function preprocess_data(raw_data, wordvector_table, opt)
 
     local order = torch.randperm(opt.nClasses*(opt.nTrainDocs+opt.nTestDocs))
     
+    -- Read first nTrainDocs + nTestDocs reviews from each of 5 classes
+    -- Assign the computed vector representation to k'th element of data tensor
     for i=1,opt.nClasses do
         for j=1,opt.nTrainDocs+opt.nTestDocs do
             local k = order[(i-1)*(opt.nTrainDocs+opt.nTestDocs) + j]
@@ -102,7 +104,7 @@ function preprocess_data(raw_data, wordvector_table, opt)
                 local tf_table = {}
 
                 -- compute term frequency (tf)
-                print("Computing term frequency...")
+                -- print("Computing term frequency...")
                 for word in document:gmatch("%S+") do
                     if tf_table[word] then
                         tf_table[word] = tf_table[word] + 1
