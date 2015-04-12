@@ -271,6 +271,7 @@ if not opt then
    cmd:option('-seed', 0, 'manual seed for initial data permutation')
    cmd:option('-modelFileName' , 'model.net', 'filename to save model')
    cmd:option('-wordWeight', 'none', 'word vector weights ["none" | "tfidf"]')
+   cmd:option('-nWordsConcat', '100', 'number of words to use from each review')
 
    cmd:text()
    opt = cmd:parse(arg or {})
