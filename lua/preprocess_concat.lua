@@ -12,8 +12,8 @@ function preprocess_data_concat(raw_data, wordvector_table, opt)
     if opt.seed ~= 0 then
         torch.manualSeed(opt.seed)
     end
-    -- local order = torch.randperm(opt.nClasses*(opt.nTrainDocs+opt.nTestDocs))
-    local order = torch.range(1, opt.nClasses*(opt.nTrainDocs+opt.nTestDocs))
+    local order = torch.randperm(opt.nClasses*(opt.nTrainDocs+opt.nTestDocs))
+    -- local order = torch.range(1, opt.nClasses*(opt.nTrainDocs+opt.nTestDocs))
     
     for i=1,opt.nClasses do
         for j=1,opt.nTrainDocs+opt.nTestDocs do
