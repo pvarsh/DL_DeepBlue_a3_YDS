@@ -75,9 +75,22 @@ function preprocess_data(raw_data, wordvector_table, opt)
                     data[k]:add(wordvector_table[word:gsub("%p+", "")])
                 end
             end
-
             data[k]:div(doc_size)
             labels[k] = i
+        end
+    end
+
+    if opt.normalize == 1 then
+        print(">> Normalizing observations...")
+        local neg_feature_mean = data:mean(1):mul(-1)
+        local feature_std = data:std(1)
+        print("normalizing tensors size: ")
+        print(neg_feature_mean:size())
+        print(neg_feature_mean)
+        print(feature_std)
+        for i=1,opt.inputDim do
+            data[{ {}, i, {} }]:add(neg_feature_mean[{1,i,1}])
+            data[{ {}, i, {} }]:div(feature_std[{1,i,1}])
         end
     end
 
@@ -200,6 +213,7 @@ if not opt then
    cmd:option('-learningRateDecay', 0.001, 'learning rate decay')
    cmd:option('-momentum', 0.1, 'SGD momentum')
    cmd:option('-model', 'linear_baseline', 'model function to be used')
+   cmd:option('-normalize', 0, 'normalize bag of words [true | false]')
    cmd:text()
    opt = cmd:parse(arg or {})
    opt.glovePath = opt.glovePath .. 'glove.6B.' .. opt.inputDim .. 'd.txt'
