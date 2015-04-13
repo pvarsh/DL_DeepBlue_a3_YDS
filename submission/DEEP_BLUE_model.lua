@@ -1,3 +1,9 @@
+require 'torch'
+require 'nn'
+require 'optim'
+require 'models'
+require 'pooling'
+
 function load_glove()
     
     path = '/scratch/courses/DSGA1008/A3/glove/glove.6B.300d.txt'
