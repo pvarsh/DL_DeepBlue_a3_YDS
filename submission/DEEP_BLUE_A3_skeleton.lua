@@ -40,12 +40,11 @@ function TemporalLogExpPooling:updateOutput(input)
    output_size[3] = input_size[3]
 
    self.output = torch.DoubleTensor(output_size)
-   -- print('self.output:size()')
-   -- print(self.output)
+   
    local exp_beta_x = torch.DoubleTensor(input_size)
 
    exp_beta_x:mul(input, self.beta) -- multiplication and exponentiation
-   exp_beta_x:exp()                 -- only is done once
+   exp_beta_x:exp()                 -- is only done once
    
    for batch_idx = 1,input_size[1] do
       for frame_idx = 1,input_size[3] do
@@ -73,7 +72,7 @@ function TemporalLogExpPooling:updateGradInput(input, gradOutput)
    local out_size = gradOutput:size()
 
    self.gradInput = torch.zeros(in_size)
-   local exp_beta_x = input:clone():mul(self.beta):exp()
+   local exp_beta_x = input:clone():mul(self.beta):exp() -- only compute once
 
    for batch_idx=1,out_size[1] do
       for frame_idx=1,out_size[3] do
