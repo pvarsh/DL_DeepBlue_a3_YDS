@@ -64,7 +64,7 @@ function main()
 
     -- Load glove vector and model
     glove_table = load_glove()
-    model = torch.load("DEEP_BLUE_model.net")
+    model = torch.load("/scratch/pv629/baseline_49.2.net")
     model:evaluate()
 
     -- Run the model 

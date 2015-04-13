@@ -31,6 +31,3 @@ wget ${url}DEEP_BLUE_model.lua
 
 # Get paper
 wget ${url}DEEP_BLUE_model.pdf
-
-#wget ${url}DEEP\ BLUE_model.net
-cp /scratch/pv629/baseline_49.2.net $HOME/DEEP_BLUE/DEEP_BLUE_model.net
