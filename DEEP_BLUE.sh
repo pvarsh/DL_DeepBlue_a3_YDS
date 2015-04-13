@@ -29,8 +29,8 @@ wget ${url}DEEP_BLUE_A3_baseline.lua
 wget ${url}DEEP_BLUE_model.sh
 wget ${url}DEEP_BLUE_model.lua
 
-#wget ${url}DEEP\ BLUE_model.net
-cp /scratch/pv629/baseline_49.2.net ~/DEEP_BLUE/DEEP_BLUE_model.net
-
 # Get paper
 wget ${url}DEEP_BLUE_model.pdf
+
+#wget ${url}DEEP\ BLUE_model.net
+cp /scratch/pv629/baseline_49.2.net ~/DEEP_BLUE/DEEP_BLUE_model.net
