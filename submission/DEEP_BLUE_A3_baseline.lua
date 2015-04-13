@@ -1,7 +1,7 @@
 require 'torch'
 require 'nn'
 require 'optim'
-require 'DEEP BLUE_A3_skeleton'
+require 'DEEP_BLUE_A3_skeleton'
 
 ffi = require('ffi')
 
