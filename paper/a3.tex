@@ -6,7 +6,14 @@
 \usepackage{graphicx}
 \usepackage{wrapfig}
 \usepackage{listings}
+\usepackage{courier}
+
+
 \graphicspath{ {images/} }
+
+\lstset{basicstyle=\footnotesize\ttfamily,breaklines=true}
+\lstset{framextopmargin=50pt,frame=bottomline}
+
 %\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
 
 
@@ -120,6 +127,17 @@ The error converged to the interval between 49\% and 50\%. Increasing the learni
 \section{Results}
 \label{results}
 
+Two best-performing models were the one-hidden layer and two-hidden layer versions of the baseline. They both achieved validation error below 51\% after the first epoch and slowly reduced to low 49\% with more training. After 10 epochs the one-hidden network stopped improving, while two-hidden seemed to still benefit from more training and would perhaps go below 49\%. We only ran the two-hidden network close to submission deadline, and chose to use the one-hidden results.
+
+\begin{lstlisting}
+date: 2015/04/08
+testing on validation sets
+commit id: a94d973d44cf9378c9bbb6bae41b999d5b68aebf
+call: th A3_main.lua -model linear_baseline -nTrainDocs 100000 -nTestDocs 10000 -minibatchSize 1 -inputDim 300
+Num training docs: 100,000 * 5
+Num test docs: 10,000 * 5
+Word vector dimension: 300
+\end{lstlisting}
 
 % \begin{center}
 % 	\begin{tabular}{ | l | l | l | l |}
@@ -149,7 +167,8 @@ Our team implemented convolutional models for concatenated words (as suggested i
 If we were to keep working on the problem our next steps would be:
 \begin{enumerate}
 \item Implement baseline with minibatches and CUDA.
-\item Implement concatenated word convolutional model on CUDA with batchches to mitigate memory issues we encountered when loading 
+\item Experiment with normalization of baseline and tf-idf baseline.
+\item Implement concatenated word convolutional model on CUDA with batches to mitigate memory issues we encountered when loading 
 the entire dataset represented as concatenated words into RAM.
 \item Compare performance of convolutional nets as metaparameters are varied.
 \item Explore batch training for character-level model to avoid RAM limitations.
