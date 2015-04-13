@@ -75,7 +75,7 @@ function main()
     for i=1,N do
         sentence = io.read()
 
-        data = preprocess_data(sentence)
+        data = preprocess_data(sentence,glove_table)
 
         pred = model:forward(data)
         _, rating = pred:max(2)
