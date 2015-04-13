@@ -2,8 +2,10 @@ function linear_baseline(opt)
     model = nn.Sequential()
    
     model:add(nn.Reshape(opt.minibatchSize*opt.inputDim))
+    -- First linear layer
     model:add(nn.Linear(opt.minibatchSize*opt.inputDim, opt.minibatchSize*opt.inputDim*2))
     model:add(nn.ReLU())
+
     model:add(nn.Dropout(0.5)) 
     model:add(nn.Linear(opt.minibatchSize*opt.inputDim*2, 5))
     model:add(nn.LogSoftMax())
@@ -22,7 +24,6 @@ function linear_two_hidden(opt)
     model:add(nn.ReLU())
 
     model:add(nn.Linear(opt.minibatchSize*opt.inputDim*2, opt.minibatchSize*opt.inputDim*2))
-
     model:add(nn.ReLU())
 
     -- model:add(nn.Dropout(0.5))
