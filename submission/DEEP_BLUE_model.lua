@@ -1,8 +1,6 @@
 require 'torch'
 require 'nn'
 require 'optim'
-require 'models'
-require 'pooling'
 
 function load_glove()
     
