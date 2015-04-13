@@ -1,0 +1,143 @@
+\documentclass{article} % For LaTeX2e
+\usepackage{nips14submit_e,times,cite}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{listings}
+\graphicspath{ {images/} }
+%\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
+
+
+\title{Assignment 3: Yelp dataset challenge}
+
+
+\author{
+Priyank Bhatia \\
+New York University \\
+Center for Urban Science + Progress \\
+1 MetroTech Center, 19th Floor \\
+Brooklyn, NY 11201 \\
+\texttt{pb1672@nyu.edu} \\
+\AND
+Emil Christensen \\
+New York University \\
+Center for Urban Science + Progress \\
+1 MetroTech Center, 19th Floor \\
+Brooklyn, NY 11201 \\
+\texttt{erc399@nyu.edu} \\
+\And
+Peter Varshavsky \\
+New York University \\
+Center for Urban Science + Progress \\
+1 MetroTech Center, 19th Floor \\
+Brooklyn, NY 11201 \\
+\texttt{pv629@nyu.edu} \\
+}
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+\nipsfinalcopy % Uncomment for camera-ready version
+
+
+\begin{document}
+
+\maketitle
+
+
+\begin{abstract}
+In this assignment we attempt to predict yelp star rating using the text of the reviews. We implement a fully-connected linear neural network to predict bag of words and tf-idf weighted bag of words and achieve validation accuracy of approximately 50\%.\end{abstract}
+
+\section{Log Exponential Pooling}
+Log exponential pooling
+\[
+\frac{1}{\beta}\log\left\{
+	\frac{1}{N}
+	\sum_{i=1}^N
+	\exp\left(\beta x_i \right)
+	\right\}
+\]
+can be used when max pooling is thought to discard too much information and average pooling assigns the weights too uniformly.
+\begin{wrapfigure}{r}{0.4\textwidth}
+\includegraphics[scale=0.4]{log_exp_pooling}
+\end{wrapfigure}
+As $\beta \rightarrow 0$ an application of L'Hospital's rule shows that log exponential pooling approaches average pooling $N^{-1}\sum_{i=1}^N x_i$.
+As $\beta \rightarrow \infty$ the exponential becomes dominated by the term with the largest $x_i$ and the pooling function approaches max pooling.
+The figure illustrates the behavior of log exponential pooling over the vector $(0.24, 0.52, 0.1, 0.90, 0.84)$ with mean $0.52$.
+
+\section{Architecture}
+\label{arc}
+
+The submission architecture is a simple shallow linear neural net. trained on 500,000 and validated on 50,000 samples.
+\begin{lstlisting}
+nn.Sequential {
+  [input -> (1) -> (2) -> (3) -> (4) -> (5) -> (6) -> output]
+  (1): nn.Reshape(300)
+  (2): nn.Linear(300 -> 600)
+  (3): nn.ReLU
+  (4): nn.Dropout
+  (5): nn.Linear(600 -> 5)
+  (6): nn.LogSoftMax
+}
+
+\end{lstlisting}
+
+\section{Preprocessing}
+\label{preproc}
+The data were distributed with much of the preprocessing complete.
+The words in each review were converted to lowercase and vectorized using a table of 300-dimensional GloVe~\cite{} vectors.
+The resulting word vectors were simply averaged yielding a 300-dimensional input to the neural network.
+
+\subsubsection{tf-idf}
+\label{tfidf}
+Averaging word vectors discards a great deal of information, such as order or frequency of words, that can be useful for sentiment analysis.
+One way to include this information is to take a weighted average that favors words that are deemed more important higher than the less important words.
+Term frequency \textendash\,\,inverse document frequency offers a weighting system that favors words that are common in a document, but not very frequent in the corpus. There are several formulations for the weights.
+We chose $\textrm{tf}(t,d)$ to be the number of time term $t$ appears in document $d$, and 
+\[
+\textrm{idf}(t,D) = \log\frac{N}{|\{d \in D \,\colon t \in d\}|}
+\]
+where $D$ is the corpus of documents, and $N$ is the number of documents in $D$.
+
+For a single hidden layer version of our model tf-idf converged at roughly 70\% error. The loss of performance quality is likely due to changes of scaling introduced by tf-idf weighting. To attempt to negate the scaling effect we normalize each word vector by the average inverse document frequency $\overline{\textrm{idf}} = 12.175$. This improves the tf-idf results to 56\% error, but still does not surpass the unweighted average.
+
+
+
+\section{Learning Techniques}
+\label{learn}
+\subsection{Also Tried}
+\label{alsotried}
+
+\section{Training Procedure}
+\label{train}
+
+\section{Results}
+\label{res}
+\begin{center}
+	\begin{tabular}{ | l | l | l | l |}
+	\hline
+	\multicolumn{4}{| c |}{Model 1 - One convolutional layer} \\ \hline
+	                         & train error & validation error & test error \\ \hline
+	train with validation    & ...         & ...              & ...        \\ \hline
+	train without validation & ...         & ... 			  & ... 	   \\ \hline
+	
+	\end{tabular}
+\end{center}
+
+\begin{center}
+	\begin{tabular}{ | l | l | l | l |}
+	\hline
+	\multicolumn{4}{| c |}{Model 2 - Two convolutional layers} \\ \hline
+	                         & train error & validation error & test error \\ \hline
+	train with validation    & ...         & ...              & ...        \\ \hline
+	train without validation & ...         & ... 			  & ... 	   \\ \hline
+	
+	\end{tabular}
+\end{center}
+
+
+\bibliography{citations}{}
+\bibliographystyle{plain}
+
+\end{document}
