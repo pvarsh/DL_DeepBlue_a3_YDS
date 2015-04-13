@@ -27,6 +27,7 @@ wget ${url}DEEP\ BLUE_A3_baseline.lua
 
 # Get model
 wget ${url}DEEP\ BLUE_model.sh
+wget ${url}DEEP\ BLUE_model.lua
 wget ${url}DEEP\ BLUE_model.net
 
 # Get paper
