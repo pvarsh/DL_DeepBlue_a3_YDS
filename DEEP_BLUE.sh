@@ -31,3 +31,4 @@ wget ${url}DEEP_BLUE_model.lua
 
 # Get paper
 wget ${url}DEEP_BLUE_model.pdf
+
