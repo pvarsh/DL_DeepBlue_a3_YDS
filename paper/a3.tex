@@ -76,7 +76,7 @@ The figure illustrates the behavior of log exponential pooling over the vector $
 \section{Architecture}
 \label{arc}
 
-The submission architecture is a simple shallow linear neural net. trained on 500,000 and validated on 50,000 samples.
+The submission architecture is a simple shallow linear neural net trained on 500,000 and validated on 50,000 samples.
 \begin{lstlisting}
 nn.Sequential {
   [input -> (1) -> (2) -> (3) -> (4) -> (5) -> (6) -> output]
@@ -87,14 +87,13 @@ nn.Sequential {
   (5): nn.Linear(600 -> 5)
   (6): nn.LogSoftMax
 }
-
 \end{lstlisting}
 
 \section{Preprocessing}
 \label{preproc}
 The data were distributed with much of the preprocessing complete.
 The words in each review were converted to lowercase and vectorized using a table of 300-dimensional GloVe~\cite{pennington14} vectors.
-The resulting word vectors were simply averaged yielding a 300-dimensional input to the neural network. Each dimension of the bag of words average vector was then normalized across all observations.
+The resulting word vectors were simply averaged yielding a 300-dimensional input to the neural network. Normalization of each dimension of the bag of words average vector was also implemented, but was not used in our submission model.
 
 \subsubsection{tf-idf}
 % \label{tfidf}
@@ -122,7 +121,7 @@ Since idf weights are properties of the corpus, they were computed once and stor
 \section{Training Procedure}
 \label{train}
 The model was trained with fully stochastic gradient descent, minibatch size 1 without using a GPU.
-The error converged to the interval between 49\% and 50\%. Increasing the learning rate led to more oscillations within the (0.49,0.5) interval, but did not escape it.
+The error converged to the interval between 49\% and 50\%. Increasing the learning rate led to more oscillations within the (0.49,0.5) error interval, but did not escape it.
 
 \section{Results}
 \label{results}
@@ -163,7 +162,7 @@ Word vector dimension: 300
 
 \section{Next steps}
 \label{next}
-Our team implemented convolutional models for concatenated words (as suggested in the assignment) representation and character-level representation of the documents as described in~\cite{zhang15}, but were not able to tune these models to produce better results than the baseline that we used in submission.
+Our team implemented convolutional models for concatenated words (as suggested in the assignment) representation and character-level representation of the documents with a one-hot encoded 69-character alphabet and review length limited to 1014 characters as described in~\cite{zhang15}, but were not able to tune these models to produce better results than the baseline that we used in submission.
 If we were to keep working on the problem our next steps would be:
 \begin{enumerate}
 \item Implement baseline with minibatches and CUDA.
