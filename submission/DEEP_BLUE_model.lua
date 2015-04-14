@@ -79,7 +79,7 @@ function main()
 
         pred = model:forward(data)
         _, rating = pred:max(2)
-        print(rating[1])
+        print(rating[1][1][1])
     end
 end
 
